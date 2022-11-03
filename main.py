@@ -14,7 +14,7 @@ page = requests.get("https://www.sothebys.com/en/results?locale=en", headers={"U
                                                                                             "KHTML, like Gecko) "
                                                                                             "Chrome/81.0.4044.141 "
                                                                                             "Safari/537.36"},
-                    auth=HTTPBasicAuth('noabenayoun1998@gmail.com', 'Wuqu5520'))
+                    auth=HTTPBasicAuth('noabenayoun1998@gmail.com', 'itcnbVC5678'))
 
 soup = BeautifulSoup(page.content, "html.parser")
 results = soup.find(id="searchModule")
