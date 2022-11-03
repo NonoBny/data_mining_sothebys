@@ -1,5 +1,4 @@
 import requests
-import os
 from requests.auth import HTTPBasicAuth
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -66,6 +65,7 @@ for sothebys_sale in sothebys_sales:
     print(title_sale.text.strip())
     print(details_sale.text.strip())
     print(category_sale.text.strip(), end="\n" * 2)
+
 
 print(list_sotheby)
 
