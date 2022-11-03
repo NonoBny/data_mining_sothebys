@@ -1,6 +1,8 @@
 import requests
+import os
 from requests.auth import HTTPBasicAuth
 from bs4 import BeautifulSoup
+from selenium import webdriver
 
 # constants
 MAKER = '|'
@@ -17,6 +19,8 @@ page = requests.get("https://www.sothebys.com/en/results?locale=en", headers={"U
 
 soup = BeautifulSoup(page.content, "html.parser")
 results = soup.find(id="searchModule")
+
+
 
 # for each of the sales displayed on the results page
 # data point we are looking for : title of sale, details (date, time and location)
