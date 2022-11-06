@@ -1,3 +1,5 @@
+import os
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,8 +8,24 @@ from selenium.webdriver.common.action_chains import ActionChains
 import requests
 from bs4 import BeautifulSoup
 
-driver = webdriver.Chrome(
-    '/Users/nonobny/Desktop/Scolaire/ITC/Data_Mining_Sothebys/Selenium_Driver/chromedriver')  # Optional argument,
+def get_path():
+    path_option = int(input("Noa press 1 for you selenium driver path.\nYosef press 2 for yours\n"))
+    if path_option == 1:
+        _path = '/Users/nonobny/Desktop/Scolaire/ITC/Data_Mining_Sothebys/Selenium_Driver/chromedriver'
+        return _path
+
+    elif path_option == 2:
+        _path = ''
+        os.environ['PATH'] += r"C:/Users/josep/Desktop/SeleniumDrivers"
+        return _path
+
+
+path = get_path()
+if path != '':
+    driver = webdriver.Chrome(path)
+else:
+    driver = webdriver.Chrome()
+# Optional argument,
 # if not specified will search path.
 
 driver.get('https://www.sothebys.com/en/buy/auction/2022/monochrome-important-chinese-art')
