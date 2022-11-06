@@ -62,13 +62,11 @@ ActionChains(driver)\
         .move_to_element(hoverable_auction)\
         .perform()
 
-WebDriverWait(driver, 20)\
-    .until(EC.element_to_be_clickable((By.XPATH, "//div[@class='SothebysTopNavigationItem']//div[@class='NavigationLink']//a[text()='Results']"))).click()
+WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='SothebysTopNavigationItem']//div[@class='NavigationLink']//a[text()='Results']"))).click()
 
 different_sales = driver.find_elements(By.CLASS_NAME, "Card-info-container")
 print(len(different_sales))
-for different_sale in different_sales:
-    print(different_sale.text)
+
 ignored_exceptions = (NoSuchElementException, StaleElementReferenceException,)
 for different_sale in different_sales:
     WebDriverWait(driver, 20, ignored_exceptions=ignored_exceptions)\
