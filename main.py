@@ -1,7 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from bs4 import BeautifulSoup
-from selenium import webdriver
+
 
 # constants
 MAKER = '|'

@@ -3,6 +3,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+import copy
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -32,11 +34,15 @@ ActionChains(driver)\
 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='SothebysTopNavigationItem']//div[@class='NavigationLink']//a[text()='Results']"))).click()
 
 different_sales = driver.find_elements(By.CLASS_NAME, "Card-info-container")
+
 print(len(different_sales))
 
-for different_sale in different_sales:
+for different_sale in different_sales_copy:
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable(different_sale)).click()
     driver.back()
+
+
+print(len(different_sales))
 
 #print([my_elem.get_attribute("textContent") for my_elem in driver.find_elements(By.CLASS_NAME, "SearchModule-results-item")])
 
