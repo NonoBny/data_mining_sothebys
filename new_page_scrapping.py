@@ -36,7 +36,7 @@ WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@cl
 different_sales = driver.find_elements(By.CLASS_NAME, "Card-info-container")
 
 print(len(different_sales))
-
+"""
 for different_sale in different_sales_copy:
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable(different_sale)).click()
     driver.back()
@@ -46,7 +46,7 @@ print(len(different_sales))
 
 #print([my_elem.get_attribute("textContent") for my_elem in driver.find_elements(By.CLASS_NAME, "SearchModule-results-item")])
 
-"""
+
     for different_sale in different_sales:
         WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,"//div[@class='Card-info']//a[@class='Card-info-container']"))).click()
         different_sales = different_sales[1:]
