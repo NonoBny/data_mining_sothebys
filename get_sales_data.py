@@ -5,7 +5,6 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from bs4 import BeautifulSoup
 from lxml import etree
-from main import list_items
 
 # constants
 
@@ -45,6 +44,7 @@ def login(which_driver):
 
 
 def general_info():
+    """to get 4 data points from the page : title, date, time and location"""
     documentobjectmodel = etree.HTML(str(soup))
     results = soup.find("h1", class_="headline-module_headline48Regular__oAvHN css-liv8gb")
     date = documentobjectmodel.xpath("//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[1]")
@@ -67,6 +67,8 @@ def general_info():
 
 # is it objects or art production (with an author)
 def item_or_art(sale_item):
+    """check if the auction is of art pieces (with an author) or antiques/objects etc
+    because data points are not the same in this case (no author) and return the specific data points"""
     if sale_item.find("p", class_="css-1o7cmk8"):
         item_obj = sale_item.find("p", class_="css-1o7cmk8")
         if item_obj is not None:
@@ -86,6 +88,10 @@ def item_or_art(sale_item):
 
 
 def get_collection_data():
+    """get all the items data point in addition to general info and specific info (art or object)
+      so we get the selling price, estimated price, currency used, reserve or not and return a dictionary
+      for the collection"""
+    dict_items = {}
     gen_info = general_info()
     sale_items = soup.find_all('div', class_='css-1up9enl')
     for sale_item in sale_items:
@@ -110,16 +116,16 @@ def get_collection_data():
                         "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
 
         if len(it) == 3:
-            new_dict = {"index": it[0], "Title of Item": it[1], "Author": it[2], "Estimated Price": estimate_price_str,
-                        "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not,
-                        "Title of Collection": gen_info[0], "Date of Auction": gen_info[1],
-                        "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
+            new_dict = {"Title of Item": it[1], "Author": it[2], "Estimated Price": estimate_price_str,
+                        "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
         elif len(it) == 2:
-            new_dict = {"index": it[0], "Title of Item": it[1], "Estimated Price": estimate_price_str,
-                        "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not,
-                        "Title of Collection": gen_info[0], "Date of Auction": gen_info[1],
-                        "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
-        print(new_dict)
+            new_dict = {"Title of Item": it[1], "Estimated Price": estimate_price_str,
+                        "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
+        dict_items[it[0]] = new_dict
+    collect_dict["Items:"] = dict_items
+
+    print(collect_dict)
+    return collect_dict
 
 
 if __name__ == '__main__':
