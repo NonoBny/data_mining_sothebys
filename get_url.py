@@ -3,12 +3,12 @@ import time
 from bs4 import BeautifulSoup
 from lxml import etree
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service as ChromeService
 
 WAIT_TIME = 20
 START_LINK = 'https://www.sothebys.com/en/'
@@ -16,6 +16,7 @@ AUCTION_LINK = 'https://www.sothebys.com/en/buy/auction/'
 NUMBER_OF_PAGES = 5
 
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+
 
 def login():
     """login to authentificate"""
@@ -293,7 +294,6 @@ def get_result_page_data():
             driver.get(link)
             general_info()
             each_coll_dictionary = get_collection_data()
-            print(get_collection_data())
             data_point_list.append(each_coll_dictionary)
 
         # add to each dictionary the total sale volume of the auction
@@ -310,10 +310,14 @@ def get_result_page_data():
     return data_point_list
 
 
-if __name__ == '__main__':
+def main():
     driver.get(START_LINK)
-
     login()
     go_to_results()
     print(get_result_page_data())
     driver.quit()
+
+
+if __name__ == '__main__':
+    main()
+
