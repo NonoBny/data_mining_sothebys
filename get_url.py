@@ -13,11 +13,14 @@ START_LINK = 'https://www.sothebys.com/en/'
 AUCTION_LINK = 'https://www.sothebys.com/en/buy/auction/'
 NUMBER_OF_PAGES = 1
 
+
 driver = webdriver.Chrome(
     '/Users/nonobny/Desktop/Scolaire/ITC/Data_Mining_Sothebys/chromedriver')
 
+
 def login():
     """login to authentificate"""
+
     x_path_link = "//div[@class='LinkedText']//a[text()='Log In']"
     WebDriverWait(driver, WAIT_TIME)\
         .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))\
@@ -79,32 +82,21 @@ def go_to_results():
 def get_url_n_sale_total():
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
-    time.sleep(10)
+    time.sleep(5)
     list_url = []
     list_sale_total = []
     sale_items = soup.find_all('a', class_='Card-info-container', href=True)
-    for sale_item in sale_items[1:]:
+    for sale_item in sale_items[11:]:
         if AUCTION_LINK in sale_item['href']:
             list_url.append(str(sale_item['href']))
-            total_sale = soup.find("div", class_="Card-salePrice").text.split()
+            total_sale = sale_item.find("div", class_="Card-salePrice").text.split()
 
             total_sale_str = total_sale[2] + " " + total_sale[3]
             list_sale_total.append(total_sale_str)
     return list_url, list_sale_total
 
 #######################################################
-"""
-def get_total_sale():
-    html = driver.page_source
-    soup = BeautifulSoup(html, "html.parser")
-    list_total_sale = []
-    sale_items = soup.find_all('a', class_='Card-info-container', href=True)
-    for sale_item in sale_items:
-        if AUCTION_LINK in sale_item['href']:
-            total_sale = soup.find("div", class_="Card-salePrice")
-            list_total_sale.append(total_sale)
-    return list_total_sale
-"""
+
 def general_info():
     """to get 4 data points from the page : title, date, time and location"""
     html = driver.page_source
@@ -193,19 +185,23 @@ def get_collection_data():
       for the collection"""
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
-    time.sleep(10)
+    time.sleep(5)
     gen_info = general_info()
 
     collect_dict = {"Title of Collection": gen_info[0], "Date of Auction": gen_info[1],
                     "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
     dict_items = {}
     sale_items = soup.find_all('div', class_='css-1up9enl')
+
+    # if the display is a list
     if check_type_display(sale_items):
+        # get the selling price, estimated price, currency used, reserve for each item
         for sale_item in sale_items:
             it = item_or_art_display_list(sale_item)
             price_sold = sale_item.find("p", class_="label-module_label12Medium__THkRn css-2r8rz8")
             estimate_price = sale_item.find_all("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-trd9wg")[1]
             reserve_item = sale_item.find("p", class_="label-module_label12Medium__THkRn css-1hu9w0v")
+
             if price_sold is not None:
                 price_info = price_sold.text.split()
                 price_number = price_info[0]
@@ -213,30 +209,39 @@ def get_collection_data():
             else:
                 price_number = "not sold"
                 price_currency = "n/a"
+
             if reserve_item is not None:
                 reserve_or_not = reserve_item.text
             else:
                 reserve_or_not = "reserve"
+
             if estimate_price is not None:
                 estimate_price_str = estimate_price.text
             else:
                 estimate_price_str = "No estimation available"
 
+            # check if it is an art work or an item
+            # check if it is a art work (with 3 data points title, author and index)
             if len(it) == 3:
                 new_dict = {"Title of Item": it[1], "Author": it[2], "Estimated Price": estimate_price_str,
                             "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
+            # check if it is an item (with 2 data points title and index)
             elif len(it) == 2:
                 new_dict = {"Title of Item": it[1], "Estimated Price": estimate_price_str,
                             "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
 
             dict_items[it[0]] = new_dict
+
+    # if the display is made up of 'square'
     else:
         sale_items_2 = soup.find_all('div', class_="css-1esu0b4")
+        # get the selling price, estimated price, currency used, reserve for each item
         for sale_item in sale_items_2:
             it = item_or_art_display_square(sale_item)
             price_sold = sale_item.find("p", class_="label-module_label14Medium__uD9e- css-l21c39")
             estimate_price = sale_item.find_all("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-trd9wg")[1]
             reserve_item = sale_item.find("p", class_="label-module_label12Medium__THkRn css-1xkt3wv")
+
             if price_sold is not None:
                 price_info = price_sold.text.split()
                 price_number = price_info[0]
@@ -244,18 +249,23 @@ def get_collection_data():
             else:
                 price_number = "not sold"
                 price_currency = "n/a"
+
             if reserve_item is not None:
                 reserve_or_not = reserve_item.text
             else:
                 reserve_or_not = "reserve"
+
             if estimate_price is not None:
                 estimate_price_str = estimate_price.text
             else:
                 estimate_price_str = "No estimation available"
 
+            # check if it is an art work or an item
+            # check if it is a art work (with 3 data points title, author and index)
             if len(it) == 3:
                 new_dict = {"Title of Item": it[1], "Author": it[2], "Estimated Price": estimate_price_str,
                             "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
+            # check if it is an item (with 2 data points title and index)
             elif len(it) == 2:
                 new_dict = {"Title of Item": it[1], "Estimated Price": estimate_price_str,
                             "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
@@ -265,22 +275,28 @@ def get_collection_data():
     collect_dict["Items:"] = dict_items
     return collect_dict
 
-#TODO add total sale to each dictionary of each collection
-#TODO raise exception or continue program if a pop up / auction take place or just go to next link
+
+# TODO raise exception or continue program if a pop up / auction take place or just go to next link
 def get_result_page_data():
     """final dictionary data list"""
     data_point_list = []
     link_to_next_page = "https://www.sothebys.com/en/results?locale=en"
     page_index = 0
+
+    # for each result result page
     for page_number in range(NUMBER_OF_PAGES):
         list_links = get_url_n_sale_total()[0]
         list_total_sales = get_url_n_sale_total()[1]
+
+        # for each link present on the current page
         for link in list_links:
             driver.get(link)
             general_info()
             each_coll_dictionary = get_collection_data()
             print(get_collection_data())
             data_point_list.append(each_coll_dictionary)
+
+        # add to each dictionary the total sale volume of the auction
         index = 0
         while index < len(list_total_sales):
             data_point_list[index + page_index]["Total Sale:"] = list_total_sales[index]
@@ -290,18 +306,17 @@ def get_result_page_data():
         link_to_next_page = driver.find_element(By.CLASS_NAME, "SearchModule-nextPageUrl") \
             .find_element(By.TAG_NAME, 'a').get_attribute('href')
         driver.get(link_to_next_page)
+
     return data_point_list
 
 
-
 if __name__ == '__main__':
-    driver.get(START_LINK)
 
-    html = driver.page_source
-    soup = BeautifulSoup(html, "html.parser")
+    driver.get(START_LINK)
 
     login()
     go_to_results()
     print(get_result_page_data())
+    driver.quit()
 
 
