@@ -44,8 +44,11 @@ def login():
         .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))\
         .click()
 
-def go_to_Results():
+
+def go_to_results():
+    """get to the result page of the sothebys website"""
     x_path_link = "//div[@class='PageHeader-body']"
+
     hoverable_header = WebDriverWait(driver, WAIT_TIME) \
         .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))
 
@@ -86,6 +89,7 @@ def get_url():
 
 #######################################################
 
+
 def general_info():
     """to get 4 data points from the page : title, date, time and location"""
     html = driver.page_source
@@ -111,10 +115,12 @@ def general_info():
     return results.text, str_date, str_time, str_loc
 
 
-# is it objects or art production (with an author)
+# is it objects or art production (with an author) in case of list display
 def item_or_art_display_list(sale_item):
     """check if the auction is of art pieces (with an author) or antiques/objects etc
-    because data points are not the same in this case (no author) and return the specific data points"""
+    because data points are not the same in this case (no author) and return the specific data points
+    if the display is in list form"""
+    # this is when it is an art production (3 data points)
     if sale_item.find("p", class_="css-1o7cmk8"):
         item_obj = sale_item.find("p", class_="css-1o7cmk8")
         if item_obj is not None:
@@ -122,6 +128,7 @@ def item_or_art_display_list(sale_item):
             index_item = info_title[0][:-1]
             title_item = info_title[1]
         return index_item, title_item
+    # this is when it is an object (2 data points)
     if sale_item.find("div", class_="css-wdkl43"):
         author_and_index = sale_item.find("p", class_="css-8908nx")
         title_art = sale_item.find("p", class_="css-17ei96f")
@@ -134,6 +141,10 @@ def item_or_art_display_list(sale_item):
 
 
 def item_or_art_display_square(sale_item):
+    """check if the auction is of art pieces (with an author) or antiques/objects etc
+        because data points are not the same in this case (no author) and return the specific data points
+        if the display is in square form"""
+    # this is when it is an art production (3 data points)
     if sale_item.find("p", class_="paragraph-module_paragraph16Regular__CXt6G css-5dbuiq"):
         author_and_index = sale_item.find("h5", class_="headline-module_headline20Regular__zmXrx css-y1q8mr")
         title_art = sale_item.find("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-17r6vaq")
@@ -143,8 +154,9 @@ def item_or_art_display_square(sale_item):
             author = author_and_index[1]
             title_of_artpiece = title_art.text
         return index, title_of_artpiece, author
-    elif sale_item.find("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-17r6vaq"):
-        item_obj = sale_item.find("p", class_="headline-module_headline20Regular__zmXrx css-17r6vaq")
+    # this is when it is an object (2 data points)
+    else:
+        item_obj = sale_item.find("h5", class_="headline-module_headline20Regular__zmXrx css-17r6vaq")
         if item_obj is not None:
             info_title = item_obj.text.split(maxsplit=1)
             index_item = info_title[0][:-1]
@@ -153,7 +165,8 @@ def item_or_art_display_square(sale_item):
 
 
 def check_type_display(happy_souping):
-    if happy_souping is None:
+    """check the type of display (list or square)"""
+    if not happy_souping:
         return False
     else:
         return True
@@ -199,12 +212,14 @@ def get_collection_data():
 
             dict_items[it[0]] = new_dict
     else:
-        sale_items = soup.find_all('div', class_="css-1esu0b4")
-        for sale_item in sale_items:
+        sale_items_2 = soup.find_all('div', class_="css-1esu0b4")
+        for sale_item in sale_items_2:
             it = item_or_art_display_square(sale_item)
+            print(it)
             price_sold = sale_item.find("p", class_="label-module_label14Medium__uD9e- css-l21c39")
             estimate_price = sale_item.find_all("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-trd9wg")[1]
             reserve_item = sale_item.find("p", class_="label-module_label12Medium__THkRn css-1xkt3wv")
+            print(price_sold, estimate_price, reserve_item)
             if price_sold is not None:
                 price_info = price_sold.text.split()
                 price_number = price_info[0]
@@ -232,6 +247,7 @@ def get_collection_data():
 
 
 def get_result_page_data():
+    """final dictionary data list"""
     data_point_list = []
     list_links = get_url()
     for link in list_links:
@@ -251,7 +267,7 @@ if __name__ == '__main__':
     soup = BeautifulSoup(html, "html.parser")
 
     login()
-    go_to_Results()
+    go_to_results()
     get_url()
     print(get_result_page_data())
 
