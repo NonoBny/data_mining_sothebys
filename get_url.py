@@ -3,27 +3,26 @@ import time
 from bs4 import BeautifulSoup
 from lxml import etree
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 WAIT_TIME = 20
 START_LINK = 'https://www.sothebys.com/en/'
 AUCTION_LINK = 'https://www.sothebys.com/en/buy/auction/'
-NUMBER_OF_PAGES = 1
+NUMBER_OF_PAGES = 5
 
-
-driver = webdriver.Chrome(
-    '/Users/nonobny/Desktop/Scolaire/ITC/Data_Mining_Sothebys/chromedriver')
-
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 def login():
     """login to authentificate"""
 
     x_path_link = "//div[@class='LinkedText']//a[text()='Log In']"
-    WebDriverWait(driver, WAIT_TIME)\
-        .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))\
+    WebDriverWait(driver, WAIT_TIME) \
+        .until(EC.element_to_be_clickable((By.XPATH, x_path_link))) \
         .click()
 
     x_path_link = "//div[@class='form-input-row ']" \
@@ -31,20 +30,20 @@ def login():
 
     text = "josephaschoen@gmail.com"
 
-    WebDriverWait(driver, WAIT_TIME)\
-        .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))\
+    WebDriverWait(driver, WAIT_TIME) \
+        .until(EC.element_to_be_clickable((By.XPATH, x_path_link))) \
         .send_keys(text)
 
     x_path_link = "//div[@class='form-input-row-password \n                        ']//input[@id='password']"
 
     text = "ITCDataMining22"
-    WebDriverWait(driver, WAIT_TIME)\
-        .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))\
+    WebDriverWait(driver, WAIT_TIME) \
+        .until(EC.element_to_be_clickable((By.XPATH, x_path_link))) \
         .send_keys(text)
 
     x_path_link = "//button[@id='login-button-id']"
-    WebDriverWait(driver, WAIT_TIME)\
-        .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))\
+    WebDriverWait(driver, WAIT_TIME) \
+        .until(EC.element_to_be_clickable((By.XPATH, x_path_link))) \
         .click()
 
 
@@ -86,7 +85,7 @@ def get_url_n_sale_total():
     list_url = []
     list_sale_total = []
     sale_items = soup.find_all('a', class_='Card-info-container', href=True)
-    for sale_item in sale_items[11:]:
+    for sale_item in sale_items[1:]:
         if AUCTION_LINK in sale_item['href']:
             list_url.append(str(sale_item['href']))
             total_sale = sale_item.find("div", class_="Card-salePrice").text.split()
@@ -94,6 +93,7 @@ def get_url_n_sale_total():
             total_sale_str = total_sale[2] + " " + total_sale[3]
             list_sale_total.append(total_sale_str)
     return list_url, list_sale_total
+
 
 #######################################################
 
@@ -311,12 +311,9 @@ def get_result_page_data():
 
 
 if __name__ == '__main__':
-
     driver.get(START_LINK)
 
     login()
     go_to_results()
     print(get_result_page_data())
     driver.quit()
-
-
