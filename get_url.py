@@ -11,10 +11,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 WAIT_TIME = 20
 START_LINK = 'https://www.sothebys.com/en/'
 AUCTION_LINK = 'https://www.sothebys.com/en/buy/auction/'
+NUMBER_OF_PAGES = 1
 
 driver = webdriver.Chrome(
     '/Users/nonobny/Desktop/Scolaire/ITC/Data_Mining_Sothebys/chromedriver')
-
 
 def login():
     """login to authentificate"""
@@ -76,20 +76,35 @@ def go_to_results():
         .click()
 
 
-def get_url():
+def get_url_n_sale_total():
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
     time.sleep(10)
     list_url = []
+    list_sale_total = []
+    sale_items = soup.find_all('a', class_='Card-info-container', href=True)
+    for sale_item in sale_items[1:]:
+        if AUCTION_LINK in sale_item['href']:
+            list_url.append(str(sale_item['href']))
+            total_sale = soup.find("div", class_="Card-salePrice").text.split()
+
+            total_sale_str = total_sale[2] + " " + total_sale[3]
+            list_sale_total.append(total_sale_str)
+    return list_url, list_sale_total
+
+#######################################################
+"""
+def get_total_sale():
+    html = driver.page_source
+    soup = BeautifulSoup(html, "html.parser")
+    list_total_sale = []
     sale_items = soup.find_all('a', class_='Card-info-container', href=True)
     for sale_item in sale_items:
         if AUCTION_LINK in sale_item['href']:
-            list_url.append(str(sale_item['href']))
-    return list_url
-
-#######################################################
-
-
+            total_sale = soup.find("div", class_="Card-salePrice")
+            list_total_sale.append(total_sale)
+    return list_total_sale
+"""
 def general_info():
     """to get 4 data points from the page : title, date, time and location"""
     html = driver.page_source
@@ -180,6 +195,7 @@ def get_collection_data():
     soup = BeautifulSoup(html, "html.parser")
     time.sleep(10)
     gen_info = general_info()
+
     collect_dict = {"Title of Collection": gen_info[0], "Date of Auction": gen_info[1],
                     "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
     dict_items = {}
@@ -201,7 +217,10 @@ def get_collection_data():
                 reserve_or_not = reserve_item.text
             else:
                 reserve_or_not = "reserve"
-            estimate_price_str = estimate_price.text
+            if estimate_price is not None:
+                estimate_price_str = estimate_price.text
+            else:
+                estimate_price_str = "No estimation available"
 
             if len(it) == 3:
                 new_dict = {"Title of Item": it[1], "Author": it[2], "Estimated Price": estimate_price_str,
@@ -215,11 +234,9 @@ def get_collection_data():
         sale_items_2 = soup.find_all('div', class_="css-1esu0b4")
         for sale_item in sale_items_2:
             it = item_or_art_display_square(sale_item)
-            print(it)
             price_sold = sale_item.find("p", class_="label-module_label14Medium__uD9e- css-l21c39")
             estimate_price = sale_item.find_all("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-trd9wg")[1]
             reserve_item = sale_item.find("p", class_="label-module_label12Medium__THkRn css-1xkt3wv")
-            print(price_sold, estimate_price, reserve_item)
             if price_sold is not None:
                 price_info = price_sold.text.split()
                 price_number = price_info[0]
@@ -231,7 +248,10 @@ def get_collection_data():
                 reserve_or_not = reserve_item.text
             else:
                 reserve_or_not = "reserve"
-            estimate_price_str = estimate_price.text
+            if estimate_price is not None:
+                estimate_price_str = estimate_price.text
+            else:
+                estimate_price_str = "No estimation available"
 
             if len(it) == 3:
                 new_dict = {"Title of Item": it[1], "Author": it[2], "Estimated Price": estimate_price_str,
@@ -245,19 +265,33 @@ def get_collection_data():
     collect_dict["Items:"] = dict_items
     return collect_dict
 
-
+#TODO add total sale to each dictionary of each collection
+#TODO raise exception or continue program if a pop up / auction take place or just go to next link
 def get_result_page_data():
     """final dictionary data list"""
     data_point_list = []
-    list_links = get_url()
-    for link in list_links:
-        driver.get(link)
-        general_info()
-        get_collection_data()
-        print(get_collection_data())
-        data_point_list.append(get_collection_data())
-        print(data_point_list)
+    link_to_next_page = "https://www.sothebys.com/en/results?locale=en"
+    page_index = 0
+    for page_number in range(NUMBER_OF_PAGES):
+        list_links = get_url_n_sale_total()[0]
+        list_total_sales = get_url_n_sale_total()[1]
+        for link in list_links:
+            driver.get(link)
+            general_info()
+            each_coll_dictionary = get_collection_data()
+            print(get_collection_data())
+            data_point_list.append(each_coll_dictionary)
+        index = 0
+        while index < len(list_total_sales):
+            data_point_list[index + page_index]["Total Sale:"] = list_total_sales[index]
+            index += 1
+        page_index += 1
+        driver.get(link_to_next_page)
+        link_to_next_page = driver.find_element(By.CLASS_NAME, "SearchModule-nextPageUrl") \
+            .find_element(By.TAG_NAME, 'a').get_attribute('href')
+        driver.get(link_to_next_page)
     return data_point_list
+
 
 
 if __name__ == '__main__':
@@ -268,7 +302,6 @@ if __name__ == '__main__':
 
     login()
     go_to_results()
-    get_url()
     print(get_result_page_data())
 
 
