@@ -94,6 +94,7 @@ def get_collection_data():
     collect_dict = {"Title of Collection": gen_info[0], "Date of Auction": gen_info[1],
                     "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
     sale_items = soup.find_all('div', class_='css-1up9enl')
+    print(check_type_display(sale_items))
     dict_items = {}
     for sale_item in sale_items:
         it = item_or_art(sale_item)
@@ -125,10 +126,16 @@ def get_collection_data():
     collect_dict["Items:"] = dict_items
     return collect_dict
 
+def check_type_display(happy_souping):
+    if happy_souping is None:
+        return False
+    else:
+        return True
+
 
 if __name__ == '__main__':
     driver.get(
-        'https://www.sothebys.com/en/buy/auction/2022/les-lalanne-de-dorothee-lalanne?locale=en')
+        'https://www.sothebys.com/en/buy/auction/2022/classic-design?locale=en')
     button = WebDriverWait(driver, WAIT_TIME) \
         .until(EC.element_to_be_clickable(
         (By.XPATH, "//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[4]/div/div/button[1]")))
@@ -139,5 +146,6 @@ if __name__ == '__main__':
     time.sleep(10)
 
     general_info()
-    print(get_collection_data())
+    get_collection_data()
+
 

@@ -132,26 +132,25 @@ def item_or_art_display_list(sale_item):
             title_of_artpiece = title_art.text
         return index, title_of_artpiece, author
 
-"""    
+
 def item_or_art_display_square(sale_item):
-    if sale_item.find("p", class_="css-1o7cmk8"):
-        item_obj = sale_item.find("p", class_="css-1o7cmk8")
-        if item_obj is not None:
-            info_title = item_obj.text.split(maxsplit=1)
-            index_item = info_title[0][:-1]
-            title_item = info_title[1]
-        return index_item, title_item
-    if sale_item.find("div", class_="css-wdkl43"):
-        author_and_index = sale_item.find("p", class_="css-8908nx")
-        title_art = sale_item.find("p", class_="css-17ei96f")
+    if sale_item.find("p", class_="paragraph-module_paragraph16Regular__CXt6G css-5dbuiq"):
+        author_and_index = sale_item.find("h5", class_="headline-module_headline20Regular__zmXrx css-y1q8mr")
+        title_art = sale_item.find("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-17r6vaq")
         if author_and_index is not None and title_art is not None:
             author_and_index = author_and_index.text.split(maxsplit=1)
             index = author_and_index[0][:-1]
             author = author_and_index[1]
             title_of_artpiece = title_art.text
         return index, title_of_artpiece, author
-        
-"""
+    elif sale_item.find("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-17r6vaq"):
+        item_obj = sale_item.find("p", class_="headline-module_headline20Regular__zmXrx css-17r6vaq")
+        if item_obj is not None:
+            info_title = item_obj.text.split(maxsplit=1)
+            index_item = info_title[0][:-1]
+            title_item = info_title[1]
+        return index_item, title_item
+
 
 def check_type_display(happy_souping):
     if happy_souping is None:
@@ -202,12 +201,10 @@ def get_collection_data():
     else:
         sale_items = soup.find_all('div', class_="css-1esu0b4")
         for sale_item in sale_items:
-            #TODO do the function
             it = item_or_art_display_square(sale_item)
             price_sold = sale_item.find("p", class_="label-module_label14Medium__uD9e- css-l21c39")
             estimate_price = sale_item.find_all("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-trd9wg")[1]
-            #TODO change reserve
-            reserve_item = sale_item.find("p", class_="label-module_label12Medium__THkRn css-1hu9w0v")
+            reserve_item = sale_item.find("p", class_="label-module_label12Medium__THkRn css-1xkt3wv")
             if price_sold is not None:
                 price_info = price_sold.text.split()
                 price_number = price_info[0]
