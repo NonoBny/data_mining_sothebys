@@ -29,7 +29,8 @@ def login():
     x_path_link = "//div[@class='form-input-row ']" \
                   "//input[@id='email']"
 
-    text = "josephaschoen@gmail.com"
+    file = open('password_id', mode='r')
+    text = file.readline().strip()
 
     WebDriverWait(driver, WAIT_TIME) \
         .until(EC.element_to_be_clickable((By.XPATH, x_path_link))) \
@@ -37,7 +38,8 @@ def login():
 
     x_path_link = "//div[@class='form-input-row-password \n                        ']//input[@id='password']"
 
-    text = "ITCDataMining22"
+    text = file.readline().strip()
+
     WebDriverWait(driver, WAIT_TIME) \
         .until(EC.element_to_be_clickable((By.XPATH, x_path_link))) \
         .send_keys(text)
@@ -80,22 +82,25 @@ def go_to_results():
 
 
 def get_url_n_sale_total():
+    """get all the links and the total sale amount for each collection on the result page"""
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
-    time.sleep(10)
+    time.sleep(20)
     list_url = []
     list_sale_total = []
     sale_items = soup.find_all('a', class_='Card-info-container', href=True)
-    # TODO try to overcome the ongoing auction issue and find a way to skip their links
     for sale_item in sale_items:
         if AUCTION_LINK in sale_item['href']:
             list_url.append(str(sale_item['href']))
             total_sale_list = sale_item.find("div", class_="Card-salePrice")
-            if total_sale_list is None:
+            if not total_sale_list:
                 total_sale_str = "n/a"
             else:
                 total_sale = total_sale_list.text.split()
-                total_sale_str = total_sale[2] + " " + total_sale[3]
+                if not total_sale:
+                    total_sale_str = "n/a"
+                else:
+                    total_sale_str = total_sale[2] + " " + total_sale[3]
             list_sale_total.append(total_sale_str)
     return list_url, list_sale_total
 
@@ -107,24 +112,21 @@ def general_info():
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
     documentobjectmodel = etree.HTML(str(soup))
-    time.sleep(5)
     results = soup.find("h1", class_="headline-module_headline48Regular__oAvHN css-liv8gb")
     date_auction = documentobjectmodel.xpath("//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[1]")
-    time_auction = documentobjectmodel.xpath("//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[1]/text()[2]")
+    time_auction = documentobjectmodel.xpath(
+        "//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[1]/text()[2]")
     location_auction = documentobjectmodel.xpath("//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[2]")
-    if date_auction is None:
-        str_date = "n/a"
-    else:
-        print(date_auction)
-        str_date = date_auction[0].text
+
+    get_info_string = lambda item: 'n/a' if item is None else item[0].text
+
+    str_date = get_info_string(date_auction)
+    str_loc = get_info_string(location_auction)
+
     if time is None:
         str_time = "n/a"
     else:
         str_time = time_auction[0]
-    if location_auction is None:
-        str_loc = "n/a"
-    else:
-        str_loc = location_auction[0].text
 
     return results.text, str_date, str_time, str_loc
 
@@ -184,28 +186,32 @@ def item_or_art_display_square(sale_item):
 
 def check_type_display(happy_souping):
     """check the type of display (list or square)"""
-    if not happy_souping:
-        return False
-    else:
-        return True
+    return happy_souping
 
 
-def lenght_type_type(type_item, collect_dict, estimate_price_str, price_number, price_currency, reserve_or_not):
+def length_type_type(type_item, count_dict, estimate_price_str, price_number, price_currency, reserve_or_not):
+    """check which type of items are being sold (art pieces or other items) and
+    return the appropriate dictionary of data depending on the type of item for each item
+    return also the count of type of items bc sothebys people did confusing things sometime so few items could
+    pass for the other type but we need to know which type of items is the most reccuring type
+    bc it is going to be the right one"""
     if len(type_item) == 4:
-        collect_dict["Type of items"] = type_item[3]
+        count_dict[type_item[3]] += 1
         new_dict = {"Title of Item": type_item[1], "Author": type_item[2], "Estimated Price": estimate_price_str,
                     "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
     # check if it is an item (with 2 data points title and index)
     elif len(type_item) == 3:
-        collect_dict["Type of Items"] = type_item[2]
+        count_dict[type_item[2]] += 1
+        #collect_dict["Type of Items"] = type_item[2]
         new_dict = {"Title of Item": type_item[1], "Estimated Price": estimate_price_str,
                     "Selling price": price_number, "Currency": price_currency, "Reserve": reserve_or_not}
     else:
         new_dict = {}
-    return new_dict
+    return new_dict, count_dict
 
 
 def check_data_none(price_sold, reserve_item, estimate_price):
+    """verify if the data point are available or not (for exemple in case of ungoing auction"""
     if price_sold is not None:
         price_info = price_sold.text.split()
         price_number = price_info[0]
@@ -226,6 +232,9 @@ def check_data_none(price_sold, reserve_item, estimate_price):
 
     return price_number, price_currency, reserve_or_not, estimate_price_str
 
+def max_type_items(count_dict):
+    """return the max out of two dictionary, is going to be used for the type of items """
+    return max(count_dict, key=count_dict.get)
 
 def get_collection_data():
     """get all the items data point in addition to general info and specific info (art or object)
@@ -238,10 +247,13 @@ def get_collection_data():
 
     collect_dict = {"Title of Collection": gen_info[0], "Date of Auction": gen_info[1],
                     "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
+
     number_items = soup.find('p', class_="paragraph-module_paragraph14Regular__Zfr98 css-ccdn7j")
     number_item_str = number_items.text.split()[0]
     collect_dict["Number of items"] = number_item_str
+
     dict_items = {}
+    count_dict = {'Art pieces': 0, 'Other items': 0}
     sale_items = soup.find_all('div', class_='css-1up9enl')
 
     # if the display is a list
@@ -253,11 +265,11 @@ def get_collection_data():
             estimate_price = sale_item.find_all("p", class_="paragraph-module_paragraph14Regular__Zfr98 css-trd9wg")[1]
             reserve_item = sale_item.find("p", class_="label-module_label12Medium__THkRn css-1hu9w0v")
 
-            price_number, price_currency, reserve_or_not, estimate_price_str = check_data_none(price_sold, reserve_item, estimate_price)
+            price_number, price_currency, reserve_or_not, estimate_price_str = check_data_none(price_sold, reserve_item,                                                                                          estimate_price)
 
             # check if it is a art work (with 3 data points title, author and index)
             # or an item (with 2 data points title and index) and return the data
-            new_dict = lenght_type_type(it, collect_dict, estimate_price_str,
+            new_dict, count_dict = length_type_type(it, count_dict, estimate_price_str,
                                         price_number, price_currency, reserve_or_not)
 
             dict_items[it[0]] = new_dict
@@ -276,16 +288,17 @@ def get_collection_data():
             price_number, price_currency, reserve_or_not, estimate_price_str = check_data_none(price_sold, reserve_item,
                                                                                                estimate_price)
 
-            new_dict = lenght_type_type(it, collect_dict, estimate_price_str,
-                                        price_number, price_currency, reserve_or_not)
+            new_dict, count_dict = length_type_type(it, count_dict, estimate_price_str,
+                                                    price_number, price_currency, reserve_or_not)
 
             dict_items[it[0]] = new_dict
 
+    type_of_items = max_type_items(count_dict)
+    collect_dict["Type of Items"] = type_of_items
     collect_dict["Items"] = dict_items
     return collect_dict
 
 
-# TODO raise exception or continue program if a pop up / auction take place or just go to next link
 def get_result_page_data():
     """final dictionary data list"""
     data_point_list = []
@@ -293,9 +306,8 @@ def get_result_page_data():
     page_index = 0
 
     # for each result result page
-    for page_number in range(NUMBER_OF_PAGES):
-        list_links = get_url_n_sale_total()[0]
-        list_total_sales = get_url_n_sale_total()[1]
+    for page_number in range(NUMBER_OF_PAGES - 1):
+        list_links, list_total_sales = get_url_n_sale_total()
 
         # for each link present on the current page
         for link in list_links:
@@ -316,17 +328,18 @@ def get_result_page_data():
             .find_element(By.TAG_NAME, 'a').get_attribute('href')
         driver.get(link_to_next_page)
 
+    driver.quit()
+
     return data_point_list
 
 
 def main():
+    """initialize the driver, login and get the info"""
     driver.get(START_LINK)
     login()
     go_to_results()
     print(get_result_page_data())
-    driver.quit()
 
 
 if __name__ == '__main__':
     main()
-

@@ -11,7 +11,7 @@ online platform entirely dedicated to NFT sales, Sotheby’s is one of the two a
 We have chosen to work on their website, https://www.sothebys.com/, to be able to get the data from their past auction
 sales.
 
-How does how web scrapper work? As the data from the sales is protected by password authentication, we first log into
+How does our web scrapper work? As the data from the sales is protected by password authentication, we first log into
 the website. Then we dynamically get to the result page which will allow us to extract the data point that are relevant
 for our project. Indeed, we decided to generate a list of all the past auctions collections, moving through a for loop
 to number of pages we wish to scam through – by changing the constant _**NUMBER_OF_PAGES**_. For each result page, we extract
