@@ -12,8 +12,8 @@ We have chosen to work on their website, https://www.sothebys.com/, to be able t
 sales.
 
 How does our web scrapper work? As the data from the sales is protected by password authentication, we first log into
-the website. Then we dynamically get to the result page which will allow us to extract the data point that are relevant
-for our project. Indeed, we decided to generate a list of all the past auctions collections, moving through a for loop
+the website. Then we dynamically get to the result page which will allow us to extract the data points that are relevant
+to our project. Indeed, we decided to generate a list of all the past auctions collections, moving through a for loop
 to number of pages we wish to scam through – by changing the constant _**NUMBER_OF_PAGES**_. For each result page, we extract
 the link for each collection with the function _get_url_n_sale_total()_, which enables us to navigate to each collection thanks to selenium and to be able to extract
 the data of all the items for each collection. We are creating a dictionary for each of the collection, with five
@@ -23,3 +23,6 @@ collection), for which we have created two nested dictionaries: one within the o
 item be the key, then as a value for each item a dictionary that list the data points we were able to extract for each
 item. For each item, we have **Title of Item**, **Estimated Price**, **Selling price**, **Currency**, **Reserve**, and an extra key **Author**
 for the Art pieces type of item collections.
+
+**Important** in order for the program to run on your machine you need to create an account with Sotheby'.  
+Then create a txt file called password_id and store your user-name/email in the first line and password on the second line.

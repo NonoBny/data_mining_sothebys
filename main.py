@@ -13,7 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 WAIT_TIME = 20
 START_LINK = 'https://www.sothebys.com/en/'
 AUCTION_LINK = 'https://www.sothebys.com/en/buy/auction/'
-NUMBER_OF_PAGES = 5
+NUMBER_OF_PAGES = 10
 
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
