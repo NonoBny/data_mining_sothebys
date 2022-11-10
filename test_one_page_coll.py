@@ -13,7 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 WAIT_TIME = 20
 START_LINK = 'https://www.sothebys.com/en/'
 AUCTION_LINK = 'https://www.sothebys.com/en/buy/auction/'
-NUMBER_OF_PAGES = 5
+NUMBER_OF_PAGES = 2
 
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
@@ -48,88 +48,6 @@ def login():
         .click()
 
 
-def go_to_results():
-    """get to the result page of the sothebys website"""
-    x_path_link = "//div[@class='PageHeader-body']"
-
-    hoverable_header = WebDriverWait(driver, WAIT_TIME) \
-        .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))
-
-    ActionChains(driver) \
-        .move_to_element(hoverable_header) \
-        .perform()
-
-    x_path_link = "//div[@class='PageHeader-body']" \
-                  "//div[@class='NavigationItemTitle']" \
-                  "//span[text()='Auctions']"
-
-    hoverable_auction = WebDriverWait(driver, WAIT_TIME) \
-        .until(EC.element_to_be_clickable((By.XPATH, x_path_link)))
-
-    ActionChains(driver) \
-        .move_to_element(hoverable_auction) \
-        .perform()
-
-    x_path_link = "//div[@class='SothebysTopNavigationItem']" \
-                  "//div[@class='NavigationLink']" \
-                  "//a[text()='Results']"
-
-    WebDriverWait(driver, WAIT_TIME) \
-        .until(EC.element_to_be_clickable((By.XPATH, x_path_link))) \
-        .click()
-
-
-def get_url_n_sale_total():
-    html = driver.page_source
-    soup = BeautifulSoup(html, "html.parser")
-    time.sleep(10)
-    list_url = []
-    list_sale_total = []
-    sale_items = soup.find_all('a', class_='Card-info-container', href=True)
-    # TODO try to overcome the ongoing auction issue and find a way to skip their links
-    for sale_item in sale_items:
-        if AUCTION_LINK in sale_item['href']:
-            list_url.append(str(sale_item['href']))
-            total_sale_list = sale_item.find("div", class_="Card-salePrice")
-            if total_sale_list is None:
-                total_sale_str = "n/a"
-            else:
-                total_sale = total_sale_list.text.split()
-                total_sale_str = total_sale[2] + " " + total_sale[3]
-            list_sale_total.append(total_sale_str)
-    return list_url, list_sale_total
-
-
-#######################################################
-
-def general_info():
-    """to get 4 data points from the page : title, date, time and location"""
-    html = driver.page_source
-    soup = BeautifulSoup(html, "html.parser")
-    documentobjectmodel = etree.HTML(str(soup))
-    time.sleep(5)
-    results = soup.find("h1", class_="headline-module_headline48Regular__oAvHN css-liv8gb")
-    date_auction = documentobjectmodel.xpath("//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[1]")
-    time_auction = documentobjectmodel.xpath("//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[1]/text()[2]")
-    location_auction = documentobjectmodel.xpath("//*[@id='__next']/div/div[4]/div/div[1]/div[4]/div/div[2]/div/p[2]")
-    if date_auction is None:
-        str_date = "n/a"
-    else:
-        print(date_auction)
-        str_date = date_auction[0].text
-    if time is None:
-        str_time = "n/a"
-    else:
-        str_time = time_auction[0]
-    if location_auction is None:
-        str_loc = "n/a"
-    else:
-        str_loc = location_auction[0].text
-
-    return results.text, str_date, str_time, str_loc
-
-
-# is it objects or art production (with an author) in case of list display
 def item_or_art_display_list(sale_item):
     """check if the auction is of art pieces (with an author) or antiques/objects etc
     because data points are not the same in this case (no author) and return the specific data points
@@ -234,10 +152,10 @@ def get_collection_data():
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
     time.sleep(5)
-    gen_info = general_info()
+    #gen_info = general_info()
 
-    collect_dict = {"Title of Collection": gen_info[0], "Date of Auction": gen_info[1],
-                    "Time of Auction": gen_info[2], "Place of Auction": gen_info[3]}
+    collect_dict = {}
+
     number_items = soup.find('p', class_="paragraph-module_paragraph14Regular__Zfr98 css-ccdn7j")
     number_item_str = number_items.text.split()[0]
     collect_dict["Number of items"] = number_item_str
@@ -285,48 +203,10 @@ def get_collection_data():
     return collect_dict
 
 
-# TODO raise exception or continue program if a pop up / auction take place or just go to next link
-def get_result_page_data():
-    """final dictionary data list"""
-    data_point_list = []
-    link_to_next_page = "https://www.sothebys.com/en/results?locale=en"
-    page_index = 0
-
-    # for each result result page
-    for page_number in range(NUMBER_OF_PAGES):
-        list_links = get_url_n_sale_total()[0]
-        list_total_sales = get_url_n_sale_total()[1]
-
-        # for each link present on the current page
-        for link in list_links:
-            driver.get(link)
-            general_info()
-            each_coll_dictionary = get_collection_data()
-            print(each_coll_dictionary)
-            data_point_list.append(each_coll_dictionary)
-
-        # add to each dictionary the total sale volume of the auction
-        index = 0
-        while index < (len(list_total_sales) - 1):
-            data_point_list[index + page_index]["Total Sale"] = list_total_sales[index]
-            index += 1
-        page_index += 1
-        driver.get(link_to_next_page)
-        link_to_next_page = driver.find_element(By.CLASS_NAME, "SearchModule-nextPageUrl") \
-            .find_element(By.TAG_NAME, 'a').get_attribute('href')
-        driver.get(link_to_next_page)
-
-    return data_point_list
-
-
-def main():
+if __name__ == '__main__':
     driver.get(START_LINK)
     login()
-    go_to_results()
-    print(get_result_page_data())
-    driver.quit()
+    driver.get("https://www.sothebys.com/en/buy/auction/2022/classic-design?locale=en")
+    time.sleep(10)
 
-
-if __name__ == '__main__':
-    main()
-
+    print(get_collection_data())
