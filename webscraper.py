@@ -1,4 +1,7 @@
+import json
 import time
+from typing import Dict, List, Tuple
+
 from bs4 import BeautifulSoup
 from lxml import etree
 from selenium import webdriver
@@ -8,10 +11,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from typing import Dict, List, Tuple
-import Collection
+from datetime import datetime
 
-import json
+import Collection
 
 with open('config.json') as config_file:
     data = json.load(config_file)
@@ -27,7 +29,7 @@ def login() -> None:
         .click()
 
     file = open('password_id', mode='r')
-    
+
     text_1 = file.readline().strip()
 
     WebDriverWait(driver, data['WAIT_TIME_20']) \
@@ -109,6 +111,7 @@ def general_info() -> Tuple[str, str, str, str]:
     location_auction = document_object_model.xpath(data['LOC_AUCT'])
 
     str_date = get_info_string(date_auction)
+    #date_datetime = datetime.strptime(str_date, "%d %B %Y").strftime("%d %B %Y")
     str_loc = get_info_string(location_auction)
 
     if time is None:
@@ -120,7 +123,7 @@ def general_info() -> Tuple[str, str, str, str]:
 
 
 def get_item_data(sale_item: BeautifulSoup, tag_type: str, class_name: str) -> Tuple[str, str, str]:
-    item_obj = sale_item.find(tag_type, class_= class_name)
+    item_obj = sale_item.find(tag_type, class_=class_name)
     type_of_item = data['OTHER_ITEMS']
     if item_obj is not None:
         info_title = item_obj.text.split(maxsplit=1)
@@ -164,7 +167,7 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
     """verify if the data point are available or not (for example in case of ongoing auction"""
     if price_sold is not None:
         price_info = price_sold.text.split()
-        price_number = price_info[0]
+        price_number = int(price_info[0].replace(",", ""))
         price_currency = price_info[1]
     else:
         price_number = data['NOT_SOLD']
@@ -176,7 +179,7 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
         reserve_or_not = data['RESERVE']
 
     if estimate_price is not None:
-        estimate_price_str = estimate_price.text
+        estimate_price_str = estimate_price.text.replace(",", "")
     else:
         estimate_price_str = data['NO_EST_AV']
 
@@ -184,9 +187,8 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
 
 
 def get_collection_item_data(soup: BeautifulSoup, square_or_list_class_name: str, price_sold_class_name: str,
-                             estimated_price_class_name: str, reserve_item_class_name: str)\
+                             estimated_price_class_name: str, reserve_item_class_name: str) \
         -> Tuple[List[Collection.Item], Dict[str, int]]:
-
     items: List[Collection.Item] = []
     count_dict: Dict[str, int] = {data['ART_PIECES']: 0, data['OTHER_ITEMS']: 0}
 
@@ -272,7 +274,7 @@ def get_result_page_data() -> List[Collection.Collection]:
     data_point_list: List[Collection.Collection] = []
     link_to_next_page = data['LINK_NEXT_RES']
 
-    for page_number in range(data['NUMBER_OF_PAGES']-1):
+    for page_number in range(data['NUMBER_OF_PAGES'] - 1):
         list_links, list_total_sales = get_url_n_sale_total()
         data_point_list += get_page_data(list_links, list_total_sales)
         driver.get(link_to_next_page)
