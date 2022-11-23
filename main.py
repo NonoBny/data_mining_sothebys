@@ -10,7 +10,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
-
 WAIT_TIME = 20
 START_LINK = 'https://www.sothebys.com/en/'
 AUCTION_LINK = 'https://www.sothebys.com/en/buy/auction/'
