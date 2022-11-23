@@ -10,7 +10,7 @@ https://www.sothebys.com/en/
 ## Table of contents
 ***
 * [General info](#general-info)
-* [Milestone 1](#milestone_1)
+* [Milestone 1](#milestone-1)
 * [Instruction](#instruction)
 
 
