@@ -12,6 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
+import argparse
+import sys
 
 import Collection
 
@@ -91,7 +93,7 @@ def get_url_n_sale_total() -> Tuple[List[str], List[str]]:
                 if not total_sale:
                     total_sale_str = data['NA_INFO']
                 else:
-                    total_sale_str = total_sale[2] + " " + total_sale[3]
+                    total_sale_str = total_sale[2].replace(",", "") + " " + total_sale[3]
             list_sale_total.append(total_sale_str)
     return list_url, list_sale_total
 
@@ -262,7 +264,17 @@ def get_page_data(list_links, list_total_sales) -> List[Collection.Collection]:
         try:
             collection = get_collection_data()
             collection.total_sale = list_total_sales.pop(0)
-            collection.print()
+            args = parser_for_scraper()
+            if args.notsold:
+                collection.print_gen_info()
+                collection.print_item_not_sold()
+            elif args.typeitem is not None:
+                type_item = args.typeitem
+
+            else:
+            #collection.get_item_price()
+                collection.print_gen_info()
+                collection.print_item_info()
             data_point_list.append(collection)
         except IndexError:
             continue
@@ -287,6 +299,14 @@ def get_result_page_data() -> List[Collection.Collection]:
     return data_point_list
 
 
+def parser_for_scraper():
+    parser = argparse.ArgumentParser(description="This is a thing! It does stuff!")
+    parser.add_argument('--notsold', action='store_true')
+    parser.add_argument('--typeitem', type=str, choices=['Other', 'Art'], help='Uh. This is the, uh, thing.', default =None)
+    parsed_arguments = parser.parse_args()
+    return parsed_arguments
+
+
 def main() -> List[Collection.Collection]:
     """initialize the driver, login and get the info"""
     driver.get(data['START_LINK'])
@@ -299,3 +319,4 @@ def main() -> List[Collection.Collection]:
 
 if __name__ == '__main__':
     main()
+

@@ -1,3 +1,7 @@
+import sys
+import argparse
+
+
 class Collection:
     def __init__(self, gen_info, number_items, type_of_items, items):
         self.title_of_collection = gen_info[0]
@@ -5,19 +9,36 @@ class Collection:
         self.time_of_auction = gen_info[2]
         self.place_of_auction = gen_info[3]
         self.number_of_items = number_items
-        self.type_of_Items = type_of_items
+        self.type_of_items = type_of_items
         self.items = items
         self.total_sale = None
 
-    def print(self):
+    def print_gen_info(self):
         print('─' * 100)
         print(f'+ Title of Collection: {str(self.title_of_collection)}\n+ Date of Auction: {str(self.date_of_auction)}'
               f'\n+ Time of Auction: {str(self.time_of_auction)}\n+ Place of Auction: {str(self.place_of_auction)}'
-              f'\n+ Number of items: {str(self.number_of_items)}\n+ Type of Items: {str(self.type_of_Items)}'
+              f'\n+ Number of items: {str(self.number_of_items)}\n+ Type of Items: {str(self.type_of_items)}'
               f'\n+ Total Sale: {str(self.total_sale)}')
         print('─' * 100)
+
+
+    def print_type_item(self, type_of_items):
+        if type_of_items == self.type_of_items:
+            pass
+
+
+    def print_item_info(self):
         for item in self.items:
             print(item)
+
+    def get_item_price(self):
+        for item in self.items:
+            print(item.price_number)
+
+    def print_item_not_sold(self):
+        for item in self.items:
+            if item.price_number == "not sold":
+                print(item)
 
 
 class Item:
