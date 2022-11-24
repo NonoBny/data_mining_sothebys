@@ -33,7 +33,7 @@
   "NO_EST_AV" : "No estimation available",
   "NUM_ITEMS": "paragraph-module_paragraph14Regular__Zfr98 css-ccdn7j",
   "SALE_ITEM_LIST": "css-1up9enl",
-  "LINK_NEXT_RES": "https://www.sothebys.com/en/results?locale=en",
+  "LINK_NEXT_RES":  "https://www.sothebys.com/en/results?locale=en",
   "NEXT_PAGE_URL": "SearchModule-nextPageUrl",
   "SALE_ITEM_FORMAT_1" : "css-1up9enl",
   "PRICE_SOLD_FORMAT_1": "label-module_label12Medium__THkRn css-2r8rz8",
@@ -42,6 +42,16 @@
   "SALE_ITEM_FORMAT_2" : "css-n8c3uc",
   "PRICE_SOLD_FORMAT_2": "label-module_label14Medium__uD9e- css-l21c39",
   "ESTIMATE_PRICE_FORMAT_2": "paragraph-module_paragraph14Regular__Zfr98 css-trd9wg",
-  "RESERVE_FORMAT_2": "label-module_label12Medium__THkRn css-1xkt3wv"
+  "RESERVE_FORMAT_2": "label-module_label12Medium__THkRn css-1xkt3wv",
+
+  "SQL_DATA" : {
+    "HOST" : "localhost",
+    "USER" : "root",
+    "PASSWORD" : "root",
+    "DATABASE" : "collection_db",
+    "CHARSET" : "utf8mb4"
+  }
+
 }
+
 
