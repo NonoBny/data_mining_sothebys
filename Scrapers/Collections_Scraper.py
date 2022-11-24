@@ -9,11 +9,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from typing import Dict, List, Tuple
-import Collection
+from Objects import Collection
 
 import json
 
-with open('config.json') as config_file:
+with open('../config.json') as config_file:
     data = json.load(config_file)
 
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
@@ -26,7 +26,7 @@ def login() -> None:
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_1']))) \
         .click()
 
-    file = open('password_id', mode='r')
+    file = open('../password_id', mode='r')
     
     text_1 = file.readline().strip()
 
