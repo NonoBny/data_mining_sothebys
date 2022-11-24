@@ -77,7 +77,7 @@ def load_items_table(items, collection_id):
 
 
 if __name__ == '__main__':
-    data = webscraper.main()
+    data = Collections_Scraper.main()
     with Utilility.connection:
         create_collection_table()
         create_items_table()
