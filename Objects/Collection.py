@@ -10,12 +10,14 @@ class Collection:
         self.total_sale = None
 
     def print(self):
-        print('title of collection: ' + str(self.title_of_collection))
-        print('date and time of auction: ' + str(self.date_of_auction) + ', ' + str(self.time_of_auction))
-        print('location: ' + str(self.place_of_auction))
-        print('number of item: ' + str(self.number_of_items))
-        print('type of items: ' + str(self.type_of_Items))
-        print('total sale: ' + str(self.total_sale))
+        print('─' * 100)
+        print(f'+ Title of Collection: {str(self.title_of_collection)}\n+ Date of Auction: {str(self.date_of_auction)}'
+              f'\n+ Time of Auction: {str(self.time_of_auction)}\n+ Place of Auction: {str(self.place_of_auction)}'
+              f'\n+ Number of items: {str(self.number_of_items)}\n+ Type of Items: {str(self.type_of_Items)}'
+              f'\n+ Total Sale: {str(self.total_sale)}')
+        print('─' * 100)
+        for item in self.items:
+            print(item)
 
 
 class Item:
@@ -24,18 +26,16 @@ class Item:
         self.title = title
         self.type = "Other items"
         self.price_number = price_number
-        self.price_currency = price_currency
+        if price_number == 'not sold':
+            self.price_currency = ""
+        else:
+            self.price_currency = price_currency
         self.reserve_or_not = reserve_or_not
         self.estimate_price = estimate_price_str
 
-    def print(self):
-        print('\t' + 'item number: ' + str(self.index))
-        print('\t' + 'title of item : ' + str(self.title))
-        print('\t' + 'type of item: ' + str(self.type))
-        print('\t' + 'price: ' + str(self.price_number) + ' ' + str(self.price_currency))
-        print('\t' + 'reserved: ' + str(self.reserve_or_not))
-        print('\t' + 'estimated price: ' + str(self.estimate_price))
-        print('\n')
+    def __str__(self):
+        return f"{self.index} - {self.title} - {self.type} - {self.price_number} {self.price_currency} - " \
+               f"{self.reserve_or_not} - {self.estimate_price}"
 
 
 class ArtPiece(Item):
@@ -44,12 +44,6 @@ class ArtPiece(Item):
         self.author = author
         self.type = "Art pieces"
 
-    def print(self):
-        print('\t' + 'item number: ' + str(self.index))
-        print('\t' + 'author: ' + str(self.author))
-        print('\t' + 'title of art piece : ' + str(self.title))
-        print('\t' + 'type of item: ' + str(self.type))
-        print('\t' + 'price: ' + str(self.price_number + ' ' + self.price_currency))
-        print('\t' + 'reserved: ' + str(self.reserve_or_not))
-        print('\t' + 'estimated price: ' + str(self.estimate_price))
-        print('\n')
+    def __str__(self):
+        return f"{self.index} - {self.author} - {self.title} - {self.type} - {self.price_number} {self.price_currency} " \
+               f"- {self.reserve_or_not} - {self.estimate_price}"

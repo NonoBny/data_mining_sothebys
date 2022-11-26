@@ -1,15 +1,19 @@
 from Scrapers import Artists_Scraper
 from Objects_to_SQL import Utilility
-artist_columns = [Utilility.Column('name', 'varchar(20)', ['COLLATE utf8_bin']),
-                  Utilility.Column('bio',  'varchar(20)', ['COLLATE utf8_bin'])]
+
+artist_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL', ]),
+                  Utilility.Column('name', 'varchar(20)', ['COLLATE utf8_bin']),
+                  Utilility.Column('life', 'varchar(20)', ['COLLATE utf8_bin']),
+                  Utilility.Column('bio',  'TEXT', ['COLLATE utf8_bin'])]
 
 
 def create_artist_table():
-    keys = ['PRIMARY KEY (name)']
+    keys = ['PRIMARY KEY (id)']
     Utilility.create_table('artists', artist_columns, keys)
 
 
 def insert_into_artists_table(artist):
+
     arg0 = str(artist.name)
     arg1 = str(artist.bio)
     values = (arg0, arg1)
