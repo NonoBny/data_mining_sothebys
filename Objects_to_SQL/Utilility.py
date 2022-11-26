@@ -40,7 +40,6 @@ def create_table(table_name: str, columns: List[Column], keys: List[str]):
     sql = "CREATE TABLE IF NOT EXISTS " + table_name + "(\n"
     for column in columns:
         sql += column.name + ' ' + column.data_type + ' '
-        sql += ' '.join(column.options)
 
         for option in column.options:
             sql += option + ' '
