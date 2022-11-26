@@ -1,6 +1,8 @@
-from Objects import Collection
+import collections
+
 from Scrapers import Collections_Scraper
 from Objects_to_SQL import Utilility
+import Sothebys_Objects
 
 collection_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                       Utilility.Column('title_of_collection', 'varchar(255)', ['COLLATE utf8_bin']),
@@ -57,7 +59,7 @@ def insert_into_items_table(item, collection_id):
     print('testing insert_into_items_table')
     arg0 = str(collection_id)
     arg1 = str(item.index)
-    if type(item) is Collection.ArtPiece:
+    if type(item) is Sothebys_Objects.ArtPiece:
         arg2 = str(item.author)
     else:
         arg2 = 'n/a'
@@ -79,7 +81,8 @@ def load_items_table(items, collection_id):
 
 
 if __name__ == '__main__':
-    data = webscraper.main()
+    # todo try to make this more generic need a function that turns any object into an sql query
+    data = Collections_Scraper.main()
     with Utilility.connection:
         create_collection_table()
         create_items_table()
