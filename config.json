@@ -1,6 +1,6 @@
 {
   "AUCTION_LINK": "https://www.sothebys.com/en/buy/auction/",
-  "NUMBER_OF_PAGES": 10,
+  "NUMBER_OF_PAGES": 2,
   "START_LINK": "https://www.sothebys.com/en/",
   "WAIT_TIME_20": 20,
   "WAIT_TIME_5": 5,
