@@ -2,21 +2,19 @@ import time
 from bs4 import BeautifulSoup
 from lxml import etree
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from typing import Dict, List, Tuple
-from Objects import Collection
-
+from Sothebys_Objects import Collection, Item, ArtPiece
 import json
 
 with open('../config.json') as config_file:
     data = json.load(config_file)
 
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
 def login() -> None:
@@ -26,16 +24,17 @@ def login() -> None:
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_1']))) \
         .click()
 
-    file = open('../password_id', mode='r')
+    #file = open('../password_id', mode='r')
     
-    text_1 = file.readline().strip()
+    #text_1 = file.readline().strip()
+    text_1 = 'josephaschoen@gmail.com'
 
     WebDriverWait(driver, data['WAIT_TIME_20']) \
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_2']))) \
         .send_keys(text_1)
 
-    text_2 = file.readline().strip()
-
+    #text_2 = file.readline().strip()
+    text_2 = 'ITCDataMining22'
     WebDriverWait(driver, data['WAIT_TIME_20']) \
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_3']))) \
         .send_keys(text_2)
@@ -185,9 +184,9 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
 
 def get_collection_item_data(soup: BeautifulSoup, square_or_list_class_name: str, price_sold_class_name: str,
                              estimated_price_class_name: str, reserve_item_class_name: str)\
-        -> Tuple[List[Collection.Item], Dict[str, int]]:
+        -> Tuple[List[Item], Dict[str, int]]:
 
-    items: List[Collection.Item] = []
+    items: List[Item] = []
     count_dict: Dict[str, int] = {data['ART_PIECES']: 0, data['OTHER_ITEMS']: 0}
 
     sale_items_list = soup.find_all('div', class_=square_or_list_class_name)
@@ -209,10 +208,10 @@ def get_collection_item_data(soup: BeautifulSoup, square_or_list_class_name: str
             check_data_none(price_sold, reserve_item, estimate_price)
 
         if item_type == data['OTHER_ITEMS']:
-            item = Collection.Item(index, title, price_number, price_currency, reserve_or_not, estimate_price_str)
+            item = Item(index, title, price_number, price_currency, reserve_or_not, estimate_price_str)
         else:
-            item = Collection.ArtPiece(index, author, title, price_number, price_currency,
-                                       reserve_or_not, estimate_price_str)
+            item = ArtPiece(index, author, title, price_number, price_currency,
+                            reserve_or_not, estimate_price_str)
         count_dict[item.type] += 1
 
         items.append(item)
@@ -220,7 +219,7 @@ def get_collection_item_data(soup: BeautifulSoup, square_or_list_class_name: str
     return items, count_dict
 
 
-def get_collection_data() -> Collection.Collection:
+def get_collection_data() -> Collection:
     """get all the items data point in addition to general info and specific info (art or object)
       so we get the selling price, estimated price, currency used, reserve or not and return a dictionary
       for the collection"""
@@ -248,12 +247,12 @@ def get_collection_data() -> Collection.Collection:
                                                  estimate_price_class_name, reserve_item_class_name)
 
     type_of_items = max(count_dict, key=count_dict.get)
-    collection = Collection.Collection(gen_info, number_items, type_of_items, items)
+    collection = Collection(gen_info, number_items, type_of_items, items)
     return collection
 
 
-def get_page_data(list_links, list_total_sales) -> List[Collection.Collection]:
-    data_point_list: List[Collection.Collection] = []
+def get_page_data(list_links, list_total_sales) -> List[Collection]:
+    data_point_list: List[Collection] = []
 
     for link in list_links:
         driver.get(link)
@@ -267,9 +266,9 @@ def get_page_data(list_links, list_total_sales) -> List[Collection.Collection]:
     return data_point_list
 
 
-def get_result_page_data() -> List[Collection.Collection]:
+def get_result_page_data() -> List[Collection]:
     """final dictionary data list"""
-    data_point_list: List[Collection.Collection] = []
+    data_point_list: List[Collection] = []
     link_to_next_page = data['LINK_NEXT_RES']
 
     for page_number in range(data['NUMBER_OF_PAGES']-1):
@@ -285,7 +284,7 @@ def get_result_page_data() -> List[Collection.Collection]:
     return data_point_list
 
 
-def main() -> List[Collection.Collection]:
+def main() -> List[Collection]:
     """initialize the driver, login and get the info"""
     driver.get(data['START_LINK'])
     login()

@@ -1,5 +1,6 @@
 from Scrapers import Collections_Scraper
 from Objects_to_SQL import Utilility
+import time
 currency_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                     Utilility.Column('name', 'varchar(20)', ['COLLATE utf8_bin']),
                     Utilility.Column('dollar_value',  'float(16)', ['COLLATE utf8_bin'])]
