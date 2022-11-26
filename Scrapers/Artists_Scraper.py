@@ -1,16 +1,11 @@
-from Sothebys_Objects import Artist
+from Objects.Artist import Artist
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
-import time
-import grequests
-import json
 
-with open('../config.json') as config_file:
-    data = json.load(config_file)
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 
 def get_artist_links(soup: BeautifulSoup):
@@ -46,25 +41,24 @@ def get_artist_data(soup: BeautifulSoup):
 
 def main():
     # todo make links and const part of config.json
-    # todo implement multi threading with grequests to make this faster
+    for i in range(14, 16):
+        print(i)
+    print("test")
     url = "https://www.sothebys.com/en/search?locale=en&query=artists&tab=artistsmakers"
     driver.get(url)
-    time.sleep(20)
     soup = BeautifulSoup(driver.page_source, "html.parser")
     artist_links = get_artist_links(soup)
     artists = []
-    for i in range(2, 16):
+    for i in range(15, 16):
+        print()
         driver.get(url+'&p='+str(i))
         soup = BeautifulSoup(driver.page_source, "html.parser")
         artist_links += get_artist_links(soup)
 
-    print(artist_links)
     for artist_link in artist_links:
         driver.get(artist_link)
-        time.sleep(data['WAIT_TIME_20'])
         soup = BeautifulSoup(driver.page_source, "html.parser")
         artists.append(get_artist_data(soup))
-        return artists
 
     return artists
 
