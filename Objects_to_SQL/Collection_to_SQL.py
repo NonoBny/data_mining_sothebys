@@ -1,9 +1,10 @@
 import collections
+import copy
 
 from Scrapers import Collections_Scraper
 from Objects_to_SQL import Utilility
 import Sothebys_Objects
-
+item_id = 1
 collection_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                       Utilility.Column('title_of_collection', 'varchar(255)', ['COLLATE utf8_bin']),
                       Utilility.Column('date_of_auction', 'DATETIME'),
@@ -12,8 +13,8 @@ collection_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                       Utilility.Column('type_of_items', 'varchar(255)', ['COLLATE utf8_bin']),
                       Utilility.Column('total_sale', 'varchar(255)', ['COLLATE utf8_bin'])]
 
-item_columns = [Utilility.Column('collection_id', 'int(16)', ['NOT NULL']),
-                Utilility.Column('id', 'int(16)', ['NOT NULL']),
+item_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
+                Utilility.Column('collection_id', 'int(16)', ['NOT NULL']),
                 Utilility.Column('item_no', 'int(16)', ['NOT NULL']),
                 Utilility.Column('author', 'varchar(255)', ['COLLATE utf8_bin']),
                 Utilility.Column('title', 'TEXT', ['COLLATE utf8_bin']),
@@ -29,14 +30,14 @@ def create_collection_table():
 
 
 def create_items_table():
-    keys = ['FOREIGN KEY (collection_id) REFERENCES collections(id)']
+    keys = ['PRIMARY KEY (id)', 'FOREIGN KEY (collection_id) REFERENCES collections(id)']
     Utilility.create_table('items', item_columns, keys)
 
 
 def insert_into_collections_table(collection, collection_id):
     arg0 = str(collection_id)
     arg1 = str(collection.title_of_collection)
-    arg2 = str(Utilility.get_date_time(collection.date_of_auction, collection.time_of_auction))
+    arg2 = str(collection.date_of_auction)
     arg3 = str(collection.place_of_auction)
     arg4 = str(collection.number_of_items)
     arg5 = str(collection.type_of_Items)
@@ -57,6 +58,10 @@ def load_collection_table(collections):
 
 def insert_into_items_table(item, collection_id):
     print('testing insert_into_items_table')
+    global item_id
+    arg_id = str(copy.copy(item_id))
+    item_id += 1
+
     arg0 = str(collection_id)
     arg1 = str(item.index)
     if type(item) is Sothebys_Objects.ArtPiece:
@@ -70,7 +75,7 @@ def insert_into_items_table(item, collection_id):
         arg5 = str(-1)
     arg6 = str(item.price_currency)
     arg7 = str(item.estimate_price)
-    values = (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+    values = (arg_id, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     item_names = list(map(lambda col: col.name, item_columns))
     Utilility.insert_into_table('items', item_names, values)
 

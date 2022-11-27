@@ -20,12 +20,12 @@ class Collection(SothebysObject):
         :param items: the list of items in the collection
         """
         self.title_of_collection = gen_info[0]
+
         date_str = gen_info[1]
         date_as_date = datetime.datetime.strptime(date_str, '%d %B %Y')
         time_str = gen_info[2]
         time_as_time = datetime.datetime.strptime(time_str.split()[0], '%H:%M').time()
         self.date_of_auction = datetime.datetime.combine(date_as_date, time_as_time)
-        print(self.date_of_auction)
 
         self.place_of_auction = gen_info[3]
         self.number_of_items = number_items
