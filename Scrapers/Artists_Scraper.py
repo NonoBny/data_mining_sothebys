@@ -54,7 +54,7 @@ def main():
     soup = BeautifulSoup(driver.page_source, "html.parser")
     artist_links = get_artist_links(soup)
 
-    for i in range(2 ,3):
+    for i in range(0):
         link = url+'&p='+str(i)
         driver.get(link)
         time.sleep(data['WAIT_TIME_20'])

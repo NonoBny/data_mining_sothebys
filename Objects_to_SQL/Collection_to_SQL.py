@@ -4,6 +4,7 @@ import copy
 from Scrapers import Collections_Scraper
 from Objects_to_SQL import Utilility
 import Sothebys_Objects
+collection_id = 1
 item_id = 1
 collection_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                       Utilility.Column('title_of_collection', 'varchar(255)', ['COLLATE utf8_bin']),
@@ -34,7 +35,8 @@ def create_items_table():
     Utilility.create_table('items', item_columns, keys)
 
 
-def insert_into_collections_table(collection, collection_id):
+def insert_into_collections_table(collection):
+    global collection_id
     arg0 = str(collection_id)
     arg1 = str(collection.title_of_collection)
     arg2 = str(collection.date_of_auction)
@@ -48,11 +50,12 @@ def insert_into_collections_table(collection, collection_id):
     print(column_names)
     Utilility.insert_into_table('collections', column_names, values)
     load_items_table(collection.items, collection_id)
+    collection_id += 1
 
 
 def load_collection_table(collections):
     print('testing load_collection_table')
-    list(map(lambda c, c_id: insert_into_collections_table(c, c_id), collections, range(len(collections))))
+    list(map(lambda c: insert_into_collections_table(c), collections))
     return
 
 
