@@ -54,4 +54,15 @@ to each collection thanks to selenium and to be able to extract the data of all 
 
 ### Command-line Interface Instruction
 
-hola
+Before trying to use the CLI, you need to either deactivate your conda environment with `conda deactivate`, or to put 
+`conda install --file requirements.txt` on the command line. Then, three actions can be taken through the command line 
+interface: 
+```usage: Collections_Scraper.py [-h] [--notsold] [--typeitem {Other items,Art pieces}] [--totalsale number currency]```
++ First, there is the the `--notsold` action, not followed by any argument. This prints out all the unsold items from
+each collection.
++ Then, there is the `--typeitem`action, that has to be followed either by `"Other items"` or by `"Art pieces"`. This
+shows all the collection given the specific type of items.
++ Finally, there is the `--totalsale` action, that needs to be followed by two arguments, the first one being an integer
+and the second one the currency. It returns all the collection for which the total sale amount is superior to the 
+number given, and depending on the currency it adapts to each collection. Indeed, if the collection was sold in EUR, 
+and the number given is in USD, it converts and check when converted if it verify the condition.

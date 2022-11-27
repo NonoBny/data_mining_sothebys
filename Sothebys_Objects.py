@@ -1,6 +1,5 @@
 from currency_converter import CurrencyConverter
-import datetime
-import time
+
 
 
 class SothebysObject:
@@ -30,6 +29,7 @@ class Collection:
         self.total_sale = None
 
     def print_gen_info(self):
+        """print the general info of a collection / auction"""
         print('─' * 100)
         print(f'+ Title of Collection: {str(self.title_of_collection)}\n+ Date of Auction: {str(self.date_of_auction)}'
               f'\n+ Time of Auction: {str(self.time_of_auction)}\n+ Place of Auction: {str(self.place_of_auction)}'
@@ -38,19 +38,23 @@ class Collection:
         print('─' * 100)
 
     def print_type_item(self, type_of_items):
+        """print only the collections of the type of items parameter entered"""
         if type_of_items == self.type_of_items:
             self.print_gen_info()
             self.print_item_info()
 
     def print_item_info(self):
+        """print each item within the attribute items"""
         for item in self.items:
             print(item)
 
     def get_item_price(self):
+        """print the prices for each item"""
         for item in self.items:
             print(item.price_number)
 
     def print_item_not_sold(self):
+        """print only the items that are unsold"""
         count = 0
         for item in self.items:
             if item.price_number == "not sold":
@@ -60,6 +64,8 @@ class Collection:
             print("Collection is sold out!")
 
     def print_coll_total_sale_min(self, num: int, curr: str):
+        """compare the number given the currency to the total sale amout and print only
+        if the total sales amount if above the num and currency parameters"""
         c = CurrencyConverter()
         curr_total_sale = self.total_sale.split()
         new_price_point = c.convert(int(curr_total_sale[0]), curr_total_sale[1], curr)

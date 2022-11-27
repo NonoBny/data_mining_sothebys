@@ -4,7 +4,7 @@ from typing import List, Tuple
 import datetime
 connection = pymysql.connect(host='localhost',
                              user='root',
-                             password='root',
+                             password='rootroot',
                              database='sothebys_db',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)

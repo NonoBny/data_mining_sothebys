@@ -18,7 +18,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from Sothebys_Objects import Collection, Item, ArtPiece
 
-with open('../config.json') as config_file:
+with open('config.json') as config_file:
     data = json.load(config_file)
 
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
@@ -33,7 +33,7 @@ def login() -> None:
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_1']))) \
         .click()
 
-    file = open('../password_id', mode='r')
+    file = open('password_id', mode='r')
     text_1 = file.readline().strip()
 
     WebDriverWait(driver, data['WAIT_TIME_20']) \
@@ -292,10 +292,10 @@ def get_page_data(list_links, list_total_sales) -> List[Collection]:
                         print("Either the 1st parameter is not an integer, or the currency you've "
                               "entered is wrong")
                         sys.exit(1)
-                    else:
-                        collection.print_gen_info()
-                        collection.print_item_info()
-                    data_point_list.append(collection)
+                else:
+                    collection.print_gen_info()
+                    collection.print_item_info()
+                data_point_list.append(collection)
             except SystemExit:
                 print('Something is wrong with the arguments you have passed on the terminal !')
                 driver.quit()
