@@ -66,3 +66,8 @@ shows all the collection given the specific type of items.
 and the second one the currency. It returns all the collection for which the total sale amount is superior to the 
 number given, and depending on the currency it adapts to each collection. Indeed, if the collection was sold in EUR, 
 and the number given is in USD, it converts and check when converted if it verify the condition.
+
+## Database documentation
+***
+
+<img src="ERD.png"/>
