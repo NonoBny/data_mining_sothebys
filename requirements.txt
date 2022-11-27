@@ -7,3 +7,4 @@ lxml==4.9.1
 webdriver-manager==3.8.4
 packaging==21.3
 pymysql==1.0.2
+CurrencyConverter==0.17.3

@@ -1,4 +1,5 @@
 import json
+import textwrap
 import time
 from typing import Dict, List, Tuple
 
@@ -11,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+from currency_converter import CurrencyConverter
 from datetime import datetime
 import argparse
 import sys
@@ -113,7 +115,7 @@ def general_info() -> Tuple[str, str, str, str]:
     location_auction = document_object_model.xpath(data['LOC_AUCT'])
 
     str_date = get_info_string(date_auction)
-    #date_datetime = datetime.strptime(str_date, "%d %B %Y").strftime("%d %B %Y")
+    # date_datetime = datetime.strptime(str_date, "%d %B %Y").strftime("%d %B %Y")
     str_loc = get_info_string(location_auction)
 
     if time is None:
@@ -193,7 +195,6 @@ def get_collection_item_data(soup: BeautifulSoup, square_or_list_class_name: str
         -> Tuple[List[Collection.Item], Dict[str, int]]:
     items: List[Collection.Item] = []
     count_dict: Dict[str, int] = {data['ART_PIECES']: 0, data['OTHER_ITEMS']: 0}
-
     sale_items_list = soup.find_all('div', class_=square_or_list_class_name)
 
     for sale_item in sale_items_list:
@@ -236,6 +237,7 @@ def get_collection_data() -> Collection.Collection:
     number_items = soup.find('p', class_=data['NUM_ITEMS']).text.split()[0]
 
     sale_items_list = soup.find_all('div', class_=data['SALE_ITEM_LIST'])
+
     if sale_items_list is not None:
         sale_items_class_name = data['SALE_ITEM_FORMAT_1']
         price_sold_class_name = data['PRICE_SOLD_FORMAT_1']
@@ -264,18 +266,36 @@ def get_page_data(list_links, list_total_sales) -> List[Collection.Collection]:
         try:
             collection = get_collection_data()
             collection.total_sale = list_total_sales.pop(0)
-            args = parser_for_scraper()
-            if args.notsold:
-                collection.print_gen_info()
-                collection.print_item_not_sold()
-            elif args.typeitem is not None:
-                type_item = args.typeitem
-
-            else:
-            #collection.get_item_price()
-                collection.print_gen_info()
-                collection.print_item_info()
-            data_point_list.append(collection)
+            try:
+                args = parser_for_scraper()
+                if args.notsold:
+                    collection.print_gen_info()
+                    collection.print_item_not_sold()
+                elif args.typeitem is not None:
+                    type_item = args.typeitem
+                    collection.print_type_item(type_item)
+                elif args.totalsale is not None:
+                    total_sale = args.totalsale
+                    try:
+                        price_point = int(total_sale[0])
+                        currency = total_sale[1]
+                        c = CurrencyConverter()
+                        if currency not in c.currencies:
+                            raise ValueError
+                        else:
+                            collection.print_coll_total_sale_min(price_point, currency)
+                    except ValueError:
+                        print("Either the 1st parameter is not an integer, or the currency you've "
+                              "entered is wrong")
+                        sys.exit(1)
+                    else:
+                        collection.print_gen_info()
+                        collection.print_item_info()
+                    data_point_list.append(collection)
+            except SystemExit:
+                print('Something is wrong with the arguments you have passed on the terminal !')
+                driver.quit()
+                sys.exit(1)
         except IndexError:
             continue
     return data_point_list
@@ -300,9 +320,28 @@ def get_result_page_data() -> List[Collection.Collection]:
 
 
 def parser_for_scraper():
-    parser = argparse.ArgumentParser(description="This is a thing! It does stuff!")
-    parser.add_argument('--notsold', action='store_true')
-    parser.add_argument('--typeitem', type=str, choices=['Other', 'Art'], help='Uh. This is the, uh, thing.', default =None)
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     description=textwrap.dedent(
+                                         ''' Three different actions can be taken through the parser :
+        * you can print only the unsold items
+         [--notsold] 
+        * you can choose which type of items between 
+        {'Other items', 'Art pieces'} you would like to print"
+         [--typeitem {Other items,Art pieces}]
+        * you can set a minimum total sale value in any currency 
+        you want and to only print the auctions with a total sale above it, 
+        whatever is the currency they were sold in
+        [--totalsale number currency]'''))
+    parser.add_argument('--notsold', action='store_true',
+                        help='Action that calls only the items that were not sold')
+    parser.add_argument('--typeitem', type=str, choices=['Other items', 'Art pieces'],
+                        help='Action that has to be followed with the type of item desired between "" to only '
+                             'print the collection with this specific type of item', default=None)
+    parser.add_argument('--totalsale', nargs=2, type=str, metavar=('number', 'currency'),
+                        help="Action to print the collection total sale price value above the number "
+                             "you are entering and given the currency entered (to be able to compare it to"
+                             " collections sold in other currencies)", default=None)
+
     parsed_arguments = parser.parse_args()
     return parsed_arguments
 
@@ -319,4 +358,3 @@ def main() -> List[Collection.Collection]:
 
 if __name__ == '__main__':
     main()
-

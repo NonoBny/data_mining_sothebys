@@ -1,5 +1,4 @@
-import sys
-import argparse
+from currency_converter import CurrencyConverter
 
 
 class Collection:
@@ -21,11 +20,10 @@ class Collection:
               f'\n+ Total Sale: {str(self.total_sale)}')
         print('─' * 100)
 
-
     def print_type_item(self, type_of_items):
         if type_of_items == self.type_of_items:
-            pass
-
+            self.print_gen_info()
+            self.print_item_info()
 
     def print_item_info(self):
         for item in self.items:
@@ -36,10 +34,21 @@ class Collection:
             print(item.price_number)
 
     def print_item_not_sold(self):
+        count = 0
         for item in self.items:
             if item.price_number == "not sold":
                 print(item)
+                count += 1
+        if count == 0:
+            print("Collection is sold out!")
 
+    def print_coll_total_sale_min(self, num: int, curr: str):
+        c = CurrencyConverter()
+        curr_total_sale = self.total_sale.split()
+        new_price_point = c.convert(int(curr_total_sale[0]), curr_total_sale[1], curr)
+        if new_price_point > num:
+            self.print_gen_info()
+            self.print_item_info()
 
 class Item:
     def __init__(self, index, title, price_number, price_currency, reserve_or_not, estimate_price_str):
