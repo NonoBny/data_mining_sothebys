@@ -101,6 +101,7 @@ def get_url_n_sale_total() -> Tuple[List[str], List[str]]:
 
 
 def get_info_string(item):
+    """returs n/a if there is no info available"""
     return data['NA_INFO'] if item is None else item[0].text
 
 
@@ -126,7 +127,7 @@ def general_info() -> Tuple[str, str, str, str]:
 
 
 def get_item_data(sale_item: BeautifulSoup, tag_type: str, class_name: str) -> Tuple[str, str, str]:
-    """get the index, info and type of item"""
+    """get the index, info and type of item of other items"""
     item_obj = sale_item.find(tag_type, class_=class_name)
     type_of_item = data['OTHER_ITEMS']
     if item_obj is not None:
@@ -139,6 +140,7 @@ def get_item_data(sale_item: BeautifulSoup, tag_type: str, class_name: str) -> T
 
 def get_art_display_data(sale_item: BeautifulSoup, author_tag_type: str, author_class_name: str,
                          title_tag_type: str, title_class_name: str) -> Tuple[str, str, str, str]:
+    """get the index, info (title & author) and type of art pieces """
     author_and_index = sale_item.find(author_tag_type, class_=author_class_name)
     title_art = sale_item.find(title_tag_type, class_=title_class_name)
     type_of_item = data['ART_PIECES']
@@ -152,6 +154,7 @@ def get_art_display_data(sale_item: BeautifulSoup, author_tag_type: str, author_
 
 
 def get_item_or_art_display_data(sale_item: BeautifulSoup) -> Tuple[str, ...]:
+    """check if it is a collections of items or a collection of art pieces"""
     if sale_item.find("p", class_=data['SALE_ITEM_FIND']) is not None:
         return get_item_data(sale_item, "p", data['SALE_ITEM_FIND'])
 
@@ -193,6 +196,7 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
 def get_collection_item_data(soup: BeautifulSoup, square_or_list_class_name: str, price_sold_class_name: str,
                              estimated_price_class_name: str, reserve_item_class_name: str) \
         -> Tuple[List[Item], Dict[str, int]]:
+    """given the type of diplay the function retrieves from the html code the desired data points"""
     items: List[Item] = []
     count_dict: Dict[str, int] = {data['ART_PIECES']: 0, data['OTHER_ITEMS']: 0}
 
@@ -260,7 +264,7 @@ def get_collection_data() -> Collection:
 
 def get_page_data(list_links, list_total_sales) -> List[Collection]:
     data_point_list: List[Collection] = []
-
+    """go through each link to get the data points needed"""
     for link in list_links:
         driver.get(link)
         try:
@@ -320,6 +324,7 @@ def get_result_page_data() -> List[Collection]:
 
 
 def parser_for_scraper():
+    """parser for user input in the terminal"""
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=textwrap.dedent(
                                          ''' Three different actions can be taken through the parser :
