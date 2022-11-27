@@ -14,6 +14,7 @@ import json
 with open('../config.json') as config_file:
     data = json.load(config_file)
 
+#changed this to make it work on my pc
 driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
@@ -24,17 +25,15 @@ def login() -> None:
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_1']))) \
         .click()
 
-    #file = open('../password_id', mode='r')
-    
-    #text_1 = file.readline().strip()
-    text_1 = 'josephaschoen@gmail.com'
+    file = open('../password_id', mode='r')
+    text_1 = file.readline().strip()
 
     WebDriverWait(driver, data['WAIT_TIME_20']) \
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_2']))) \
         .send_keys(text_1)
 
-    #text_2 = file.readline().strip()
-    text_2 = 'ITCDataMining22'
+    text_2 = file.readline().strip()
+
     WebDriverWait(driver, data['WAIT_TIME_20']) \
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_3']))) \
         .send_keys(text_2)
@@ -285,6 +284,7 @@ def get_result_page_data() -> List[Collection]:
 
 
 def main() -> List[Collection]:
+    # todo implement multi threading with grequests to make this faster
     """initialize the driver, login and get the info"""
     driver.get(data['START_LINK'])
     login()

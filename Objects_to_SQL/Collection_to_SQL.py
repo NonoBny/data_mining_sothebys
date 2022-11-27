@@ -82,6 +82,7 @@ def load_items_table(items, collection_id):
 
 if __name__ == '__main__':
     # todo try to make this more generic need a function that turns any object into an sql query
+    #  probably a decorator or visitor design pattern
     data = Collections_Scraper.main()
     with Utilility.connection:
         create_collection_table()

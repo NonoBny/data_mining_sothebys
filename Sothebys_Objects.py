@@ -1,4 +1,12 @@
-class Collection:
+import datetime
+import time
+
+
+class SothebysObject:
+    pass
+
+
+class Collection(SothebysObject):
     """
     This Class will contain sotheybs collection data
     A collection is a list of items all sold as a single collection
@@ -12,8 +20,13 @@ class Collection:
         :param items: the list of items in the collection
         """
         self.title_of_collection = gen_info[0]
-        self.date_of_auction = gen_info[1]
-        self.time_of_auction = gen_info[2]
+        date_str = gen_info[1]
+        date_as_date = datetime.datetime.strptime(date_str, '%d %B %Y')
+        time_str = gen_info[2]
+        time_as_time = datetime.datetime.strptime(time_str.split()[0], '%H:%M').time()
+        self.date_of_auction = datetime.datetime.combine(date_as_date, time_as_time)
+        print(self.date_of_auction)
+
         self.place_of_auction = gen_info[3]
         self.number_of_items = number_items
         self.type_of_Items = type_of_items
@@ -27,15 +40,14 @@ class Collection:
         """
         print('─' * 100)
         print(f'+ Title of Collection: {str(self.title_of_collection)}\n+ Date of Auction: {str(self.date_of_auction)}'
-              f'\n+ Time of Auction: {str(self.time_of_auction)}\n+ Place of Auction: {str(self.place_of_auction)}'
-              f'\n+ Number of items: {str(self.number_of_items)}\n+ Type of Items: {str(self.type_of_Items)}'
-              f'\n+ Total Sale: {str(self.total_sale)}')
+              f'\n+ Place of Auction: {str(self.place_of_auction)}\n+ Number of items: {str(self.number_of_items)}'
+              f'\n+ Type of Items: {str(self.type_of_Items)}\n+ Total Sale: {str(self.total_sale)}')
         print('─' * 100)
         for item in self.items:
             print(item)
 
 
-class Item:
+class Item(SothebysObject):
     """
     A class for a specific item sold on the Sothebys website
     I is part of a collection of items
@@ -96,7 +108,7 @@ class ArtPiece(Item):
                f"- {self.reserve_or_not} - {self.estimate_price}"
 
 
-class Artist:
+class Artist(SothebysObject):
     """
     A simple class of an artist on the Sotheybs website
     """

@@ -4,8 +4,8 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
 import time
-import grequests
 import json
+
 
 with open('../config.json') as config_file:
     data = json.load(config_file)
@@ -49,12 +49,15 @@ def main():
     # todo implement multi threading with grequests to make this faster
     url = "https://www.sothebys.com/en/search?locale=en&query=artists&tab=artistsmakers"
     driver.get(url)
-    time.sleep(20)
+    time.sleep(data['WAIT_TIME_20'])
+    artists = []
     soup = BeautifulSoup(driver.page_source, "html.parser")
     artist_links = get_artist_links(soup)
-    artists = []
+
     for i in range(2, 16):
-        driver.get(url+'&p='+str(i))
+        link = url+'&p='+str(i)
+        driver.get(link)
+        time.sleep(data['WAIT_TIME_20'])
         soup = BeautifulSoup(driver.page_source, "html.parser")
         artist_links += get_artist_links(soup)
 
@@ -64,7 +67,6 @@ def main():
         time.sleep(data['WAIT_TIME_20'])
         soup = BeautifulSoup(driver.page_source, "html.parser")
         artists.append(get_artist_data(soup))
-        return artists
 
     return artists
 

@@ -1,6 +1,5 @@
 from Scrapers import Artists_Scraper
 from Objects_to_SQL import Utilility
-import time
 artist_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                   Utilility.Column('name', 'varchar(255)', ['COLLATE utf8_bin']),
                   Utilility.Column('life', 'varchar(255)', ['COLLATE utf8_bin']),
@@ -29,6 +28,7 @@ def load_artist_table(artists):
 
 if __name__ == '__main__':
     # todo try to make this more generic need a function that turns any object into an sql query
+    #  probably a decorator or visitor design pattern
     data = Artists_Scraper.main()
     with Utilility.connection:
         create_artist_table()
