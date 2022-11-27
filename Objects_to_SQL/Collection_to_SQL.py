@@ -6,6 +6,7 @@ from Objects_to_SQL import Utilility
 import Sothebys_Objects
 collection_id = 1
 item_id = 1
+
 collection_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                       Utilility.Column('title_of_collection', 'varchar(255)', ['COLLATE utf8_bin']),
                       Utilility.Column('date_of_auction', 'DATETIME'),
@@ -39,10 +40,10 @@ def insert_into_collections_table(collection):
     global collection_id
     arg0 = str(collection_id)
     arg1 = str(collection.title_of_collection)
-    arg2 = str(Utilility.date_time_str_to_sql_datetime(collection))
+    arg2 = str(collection.date_of_auction)
     arg3 = str(collection.place_of_auction)
     arg4 = str(collection.number_of_items)
-    arg5 = str(collection.type_of_items)
+    arg5 = str(collection.type_of_Items)
     arg6 = str(collection.total_sale)
     values = (arg0, arg1, arg2, arg3, arg4, arg5, arg6)
     column_names = list(map(lambda col: col.name, collection_columns))
