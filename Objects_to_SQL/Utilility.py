@@ -19,6 +19,15 @@ class Column:
         self.options = options
 
 
+
+def date_time_str_to_sql_datetime(collection):
+    date_str = collection.date_of_auction
+    date_as_date = datetime.datetime.strptime(date_str, '%d %B %Y')
+    time_str = collection.time_of_auction
+    time_as_time = datetime.datetime.strptime(time_str.split()[0], '%H:%M').time()
+    date_of_auction = datetime.datetime.combine(date_as_date, time_as_time)
+    return date_of_auction
+
 def create_table(table_name: str, columns: List[Column], keys: List[str]):
     sql = "CREATE TABLE IF NOT EXISTS " + table_name + "(\n"
     for column in columns:

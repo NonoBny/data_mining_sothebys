@@ -20,16 +20,11 @@ class Collection(SothebysObject):
         :param items: the list of items in the collection
         """
         self.title_of_collection = gen_info[0]
-
-        date_str = gen_info[1]
-        date_as_date = datetime.datetime.strptime(date_str, '%d %B %Y')
-        time_str = gen_info[2]
-        time_as_time = datetime.datetime.strptime(time_str.split()[0], '%H:%M').time()
-        self.date_of_auction = datetime.datetime.combine(date_as_date, time_as_time)
-
+        self.date_of_auction = gen_info[1]
+        self.time_of_auction = gen_info[2]
         self.place_of_auction = gen_info[3]
         self.number_of_items = number_items
-        self.type_of_Items = type_of_items
+        self.type_of_items = type_of_items
         self.items = items
         self.total_sale = None
 
@@ -41,7 +36,7 @@ class Collection(SothebysObject):
         print('─' * 100)
         print(f'+ Title of Collection: {str(self.title_of_collection)}\n+ Date of Auction: {str(self.date_of_auction)}'
               f'\n+ Place of Auction: {str(self.place_of_auction)}\n+ Number of items: {str(self.number_of_items)}'
-              f'\n+ Type of Items: {str(self.type_of_Items)}\n+ Total Sale: {str(self.total_sale)}')
+              f'\n+ Type of Items: {str(self.type_of_items)}\n+ Total Sale: {str(self.total_sale)}')
         print('─' * 100)
         for item in self.items:
             print(item)
