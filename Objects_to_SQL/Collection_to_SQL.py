@@ -6,6 +6,7 @@ from Objects_to_SQL import Utilility
 import Sothebys_Objects
 collection_id = 1
 item_id = 1
+
 collection_columns = [Utilility.Column('id', 'int(16)', ['NOT NULL']),
                       Utilility.Column('title_of_collection', 'varchar(255)', ['COLLATE utf8_bin']),
                       Utilility.Column('date_of_auction', 'DATETIME'),
