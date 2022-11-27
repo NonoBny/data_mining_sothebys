@@ -19,23 +19,6 @@ class Column:
         self.options = options
 
 
-def get_date_time(date_str, time_str):
-    date = date_str.split()
-    time = time_str.split()
-
-    year = int(date[2])
-    month = int(datetime.datetime.strptime(date[1], '%B').month)
-    day = int(date[0])
-
-    hours_min = time[0].split(':')
-    hours = int(hours_min[0])
-    minutes = int(hours_min[1])
-    # timezone = time[1]
-    _date = datetime.datetime(year=year, month=month, day=day)
-
-    return _date
-
-
 def create_table(table_name: str, columns: List[Column], keys: List[str]):
     sql = "CREATE TABLE IF NOT EXISTS " + table_name + "(\n"
     for column in columns:
