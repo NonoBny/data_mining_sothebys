@@ -50,6 +50,7 @@ class Collection:
             self.print_gen_info()
             self.print_item_info()
 
+
 class Item:
     def __init__(self, index, title, price_number, price_currency, reserve_or_not, estimate_price_str):
         self.index = index
