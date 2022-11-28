@@ -1,4 +1,4 @@
-from Sothebys_Objects import Artist
+from Sothebys_Objects.Sothebys_Objects import Artist
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
@@ -7,7 +7,7 @@ import time
 import json
 
 
-with open('../config.json') as config_file:
+with open('config.json') as config_file:
     data = json.load(config_file)
 
 driver = webdriver.Chrome(ChromeDriverManager().install())
