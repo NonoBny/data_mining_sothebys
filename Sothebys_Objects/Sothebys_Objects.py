@@ -1,4 +1,4 @@
-from Sothebys_Objects.To_SQL_Obj_Visitor import Visitor
+from Sothebys_Objects.Visitor import Visitor
 from currency_converter import CurrencyConverter
 
 
@@ -169,7 +169,7 @@ class Currency(SothebysObject):
         self.dollar_value = c.convert(1, name, 'USD')
 
     def print(self):
-        return f"{self.name}"
+        print(f"{self.name}")
 
     def accept(self, visitor: Visitor):
         return visitor.visit_currency(self)
@@ -177,8 +177,15 @@ class Currency(SothebysObject):
 
 # todo implement this class
 class Place(SothebysObject):
-    def __init__(self, name):
+    def __init__(self, name, country, city, address, phone_number, bio):
         self.name = name
+        self.country = country
+        self.city = city
+        self.address = address, self.phone_number = phone_number
+        self.bio = bio
+
+    def print(self):
+        print(f"{self.name} - {self.country} - {self.city} - {self.bio} - {self.address} {self.bio}")
 
     def accept(self, visitor: Visitor):
         return visitor.visit_place(self)

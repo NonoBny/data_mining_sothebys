@@ -17,7 +17,7 @@ class ForeignKey:
 
 
 class Column:
-    def __init__(self, name, data_type: str, options=None, primary_key=False, foreign_keys=None):
+    def __init__(self, name, data_type: str, options=None, primary_key=False, foreign_key: ForeignKey=None):
         if options is None:
             options = []
         self.name = name
@@ -25,9 +25,13 @@ class Column:
         self.options = options
         self.primary_key = primary_key
 
-        if foreign_keys is None:
-            foreign_keys = []
-        self.foreign_key = foreign_keys
+        if foreign_key is None:
+            self.foreign_key = False
+        else:
+            self.foreign_key = foreign_key
+
+    def print(self):
+        print(self.name + ' ' + self.data_type + ' ' + str(self.options))
 
 
 class SothebysSQLObject:
@@ -45,9 +49,14 @@ class SothebysSQLObject:
                 sql += option + ' '
             sql += ','
 
-        # todo implement keys
-        for key in keys:
-            sql += key + ','
+        for column in self.columns:
+            if column.primary_key:
+                sql += f'Primary Key({column.name}),'
+
+        for column in self.columns:
+            if column.foreign_key:
+                sql += f"FOREIGN KEY ({column.name}) REFERENCES {column.foreign_key.table_name} ({column.foreign_key.table_column_name}),"
+
         sql = sql[:-1] + ')'
 
         print(sql)

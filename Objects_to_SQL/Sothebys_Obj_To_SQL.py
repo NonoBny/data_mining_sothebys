@@ -4,7 +4,7 @@ import datetime
 
 
 # a function to help get to strings and return a datetime object
-def string_to_date_time(collection):
+def string_to_date_time(collection: CollectionWithId):
     date_str = collection.date_of_auction
     time_str = collection.time_of_auction
     date_obj = datetime.datetime.strptime(date_str, '%d %B %Y')
@@ -112,12 +112,12 @@ class ItemToSql(SothebysObjToSQL):
 
         item_columns = [Column('id', 'int(16)', ['NOT NULL'], primary_key=True),
                         Column('collection_id', 'int(16)', ['NOT NULL'],
-                               foreign_keys=[ForeignKey('collections', 'id')]),
-                        Column('index', 'int(16)', ['NOT NULL']),
+                               foreign_key=ForeignKey('collections', 'id')),
+                        Column('item_index', 'int(16)', ['NOT NULL']),
                         Column('author', 'varchar(255)', ['COLLATE utf8_bin']),
                         Column('title', 'varchar(255)', ['COLLATE utf8_bin']),
                         Column('type_of_items', 'varchar(255)', ['COLLATE utf8_bin']),
-                        Column('price', 'float(16)'),
+                        Column('price', 'varchar(255)', ['COLLATE utf8_bin']),
                         Column('currency', 'varchar(255)', ['COLLATE utf8_bin']),
                         Column('reserved', 'varchar(255)', ['COLLATE utf8_bin']),
                         Column('estimated_price', 'varchar(255)', ['COLLATE utf8_bin'])]
@@ -134,7 +134,7 @@ class ItemToSql(SothebysObjToSQL):
             author = 'n/a'
 
         title = item.title
-        type_of_items = str(type(item))
+        type_of_items = item.type
         price = item.price_number
         currency = item.price_currency
         reserved = item.reserve_or_not
@@ -144,11 +144,9 @@ class ItemToSql(SothebysObjToSQL):
 
 
 # creates a place sql object
-class PlaceToSQL:
+class PlaceToSQL(SothebysObjToSQL):
     def __init__(self, place: PlaceWithId):
-        self.table_name = 'places'
-        self.columns = self.get_columns()
-        self.values = self.get_values(place)
+        super().__init__('places', self.get_columns(), self.values())
 
     @staticmethod
     def get_columns():

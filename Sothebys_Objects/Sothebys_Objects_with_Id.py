@@ -26,6 +26,7 @@ class CollectionWithId(Collection):
             _i_id += 1
         self.items = items_with_ids
 
+
 class ItemWithId(Item):
     def __init__(self, item: Item, _id, _parent_id):
         super().__init__(item.index, item.title, item.price_number, item.price_currency, item.reserve_or_not, item.estimate_price)
@@ -46,5 +47,6 @@ class CurrencyWithId(Currency):
 
 
 class PlaceWithId(Place):
-    # todo need to implement
-    pass
+    def __init__(self, place: Place, _id):
+        super().__init__(place.name, place.country, place.city, place.address, place.phone_number, place.bio)
+        self.unique_id = _id
