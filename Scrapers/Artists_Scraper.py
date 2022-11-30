@@ -5,12 +5,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
 import time
 import json
-
+from typing import List
 
 with open('config.json') as config_file:
     data = json.load(config_file)
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 
 def get_artist_links(soup: BeautifulSoup):
@@ -44,7 +44,7 @@ def get_artist_data(soup: BeautifulSoup):
     return artist
 
 
-def main():
+def main() -> List[Artist]:
     # todo make links and const part of config.json
     # todo implement multi threading with grequests to make this faster
     url = "https://www.sothebys.com/en/search?locale=en&query=artists&tab=artistsmakers"

@@ -30,7 +30,7 @@ class Column:
         self.foreign_key = foreign_keys
 
 
-class SotheybysSQLObject:
+class SothebysSQLObject:
     def __init__(self, table_name, columns, values):
         self.table_name = table_name
         self.columns = columns
@@ -75,13 +75,13 @@ class SotheybysSQLObject:
         pass
 
     def delete_row(self):
-        # todo impement this
+        # todo implement this
         pass
 
     def show_table(self):
-        # todo impement this
+        # todo implement this
         pass
 
     def delete_table(self):
-        # todo impement this
+        # todo implement this
         pass

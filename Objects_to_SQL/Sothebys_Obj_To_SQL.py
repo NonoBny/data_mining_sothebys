@@ -1,8 +1,5 @@
-from Objects_to_SQL.Sothebys_SQL_Obj import SotheybysSQLObject, Column, ForeignKey
-#from Sothebys_Objects.Sothebys_Objects import SothebysObject
-from Sothebys_Objects.Sothebys_Object_With_Id import ArtistWithId, CollectionWithId,\
-    ItemWithId, ArtPieceWithId, CurrencyWithId, PlaceWithId
-
+from Objects_to_SQL.Sothebys_SQL_Obj import SothebysSQLObject, Column, ForeignKey
+from Sothebys_Objects.Sothebys_Objects_with_Id import CollectionWithId, ItemWithId, ArtistWithId, CurrencyWithId, PlaceWithId
 import datetime
 
 
@@ -24,7 +21,7 @@ class SothebysObjToSQL:
         self.values = values
 
     def get_sql_object(self):
-        return SotheybysSQLObject(self.table_name, self.columns, self.values)
+        return SothebysSQLObject(self.table_name, self.columns, self.values)
 
     @staticmethod
     def get_columns():
@@ -50,7 +47,7 @@ class ArtistToSQL(SothebysObjToSQL):
 
     @staticmethod
     def get_values(artist: ArtistWithId):
-        _id = artist._id
+        _id = artist.unique_id
         name = artist.name
         life = artist.life
         bio = artist.bio
@@ -76,7 +73,7 @@ class CollectionToSql(SothebysObjToSQL):
 
     @staticmethod
     def get_values(collection: CollectionWithId):
-        _id = collection._id
+        _id = collection.unique_id
         title_of_collection = collection.title_of_collection
         date_of_auction = string_to_date_time(collection)
         place_of_auction = collection.place_of_auction
@@ -101,7 +98,7 @@ class CurrencyToSQL(SothebysObjToSQL):
 
     @staticmethod
     def get_values(currency: CurrencyWithId):
-        _id = currency._id
+        _id = currency.unique_id
         pass
 
 
@@ -128,10 +125,10 @@ class ItemToSql(SothebysObjToSQL):
 
     @staticmethod
     def get_values(item: ItemWithId):
-        _id = item._id
-        collection_id = item.collection_id # todo implement this
+        _id = item.unique_id
+        collection_id = item.parent_id
         index = item.index
-        if type(item) is ArtPieceWithId:
+        if type(item) is 'ArtPieceWithId':
             author = item.author
         else:
             author = 'n/a'
@@ -155,10 +152,10 @@ class PlaceToSQL:
 
     @staticmethod
     def get_columns():
-        # todo impement this
+        # todo implement this
         pass
 
     @staticmethod
     def get_values(place: PlaceWithId):
-        # todo impement this
+        # todo implement this
         pass

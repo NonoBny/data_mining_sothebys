@@ -1,4 +1,4 @@
-from Sothebys_Objects.Visitor import Visitor
+from Sothebys_Objects.To_SQL_Obj_Visitor import Visitor
 from currency_converter import CurrencyConverter
 
 
@@ -165,7 +165,11 @@ class ArtPiece(Item):
 class Currency(SothebysObject):
     def __init__(self, name):
         self.name = name
-        pass
+        c = CurrencyConverter()
+        self.dollar_value = c.convert(1, name, 'USD')
+
+    def print(self):
+        return f"{self.name}"
 
     def accept(self, visitor: Visitor):
         return visitor.visit_currency(self)
