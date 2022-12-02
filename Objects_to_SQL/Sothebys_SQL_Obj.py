@@ -1,23 +1,30 @@
 import pymysql
 from pymysql import cursors
+from typing import List, Tuple
+import json
 
 
-connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='root',
-                             database='sothebys_db',
-                             charset='utf8mb4',
+with open('../config.json.json') as config_file:
+    data = json.load(config_file)
+    sql_data = data["SQL_DATA"]
+
+connection = pymysql.connect(host=sql_data["HOST"],
+                             user=sql_data["USER"],
+                             password=sql_data["PASSWORD"],
+                             database=sql_data["DATABASE"],
+                             charset=sql_data["CHARSET"],
                              cursorclass=pymysql.cursors.DictCursor)
 
 
 class ForeignKey:
-    def __init__(self, table_name, table_column_name):
+    def __init__(self, table_name: str, table_column_name: str) -> None:
         self.table_name = table_name
         self.table_column_name = table_column_name
 
 
 class Column:
-    def __init__(self, name, data_type: str, options=None, primary_key=False, foreign_key: ForeignKey=None):
+    def __init__(self, name: str, data_type: str, options: List[str] = None,
+                 primary_key: bool = False, foreign_key: ForeignKey = None) -> None:
         if options is None:
             options = []
         self.name = name
@@ -35,12 +42,12 @@ class Column:
 
 
 class SothebysSQLObject:
-    def __init__(self, table_name, columns, values):
+    def __init__(self, table_name: str, columns: List[Column], values: Tuple) -> None:
         self.table_name = table_name
         self.columns = columns
         self.values = values
 
-    def create_table(self):
+    def create_table(self) -> None:
         sql = "CREATE TABLE IF NOT EXISTS " + self.table_name + "(\n"
         for column in self.columns:
             sql += column.name + ' ' + column.data_type + ' '
@@ -64,7 +71,7 @@ class SothebysSQLObject:
             cursor.execute(sql)
         return
 
-    def insert_into_table(self):
+    def insert_into_table(self) -> None:
         sql = "INSERT INTO " + self.table_name + "("
         for column in self.columns:
             sql += column.name + ','
@@ -79,18 +86,18 @@ class SothebysSQLObject:
         connection.commit()
         return
 
-    def update_row(self):
-        # todo impement this
-        pass
-
-    def delete_row(self):
+    def update_row(self) -> None:
         # todo implement this
         pass
 
-    def show_table(self):
+    def delete_row(self) -> None:
         # todo implement this
         pass
 
-    def delete_table(self):
+    def show_table(self) -> None:
+        # todo implement this
+        pass
+
+    def delete_table(self) -> None:
         # todo implement this
         pass
