@@ -1,5 +1,6 @@
 from Objects_to_SQL.Sothebys_SQL_Obj import SothebysSQLObject, Column, ForeignKey
-from Sothebys_Objects.Sothebys_Objects_with_Id import CollectionWithId, ItemWithId, ArtistWithId, CurrencyWithId, PlaceWithId
+from Sothebys_Objects.Sothebys_Objects_with_Id import CollectionWithId, ItemWithId, ArtPieceWithId, \
+    ArtistWithId, CurrencyWithId, PlaceWithId
 import datetime
 from typing import List, Tuple
 
@@ -10,17 +11,19 @@ places: List[PlaceWithId] = []
 
 
 # the lists of all of these objects is needed to get the foreign keys
-def set_global_variables(_artists: List[ArtistWithId], _currencies: List[CurrencyWithId],
-                         _places: List[PlaceWithId]) -> None:
+def set_artist_(_artists: List[ArtistWithId]) -> None:
     global artists
     artists = _artists
 
+
+def set_currencies(_currencies: List[CurrencyWithId]) -> None:
     global currencies
     currencies = _currencies
 
+
+def set_places(_places: List[PlaceWithId]) -> None:
     global places
     places = _places
-    return
 
 
 # a function to help get to strings and return a datetime object
@@ -100,7 +103,7 @@ class CollectionToSql(SothebysObjToSQL):
 
         place_of_auction = -1
         for place in places:
-            if collection.place_of_auction == place.name:
+            if collection.place_of_auction == place.city:
                 place_of_auction = place.unique_id
 
         number_of_items = collection.number_of_items
@@ -125,7 +128,9 @@ class CurrencyToSQL(SothebysObjToSQL):
     @staticmethod
     def get_values(currency: CurrencyWithId) -> Tuple:
         _id = currency.unique_id
-        pass
+        name = currency.name
+        dollar_value = currency.dollar_value
+        return _id, name, dollar_value
 
 
 # creates an Item SQL object
@@ -157,8 +162,8 @@ class ItemToSql(SothebysObjToSQL):
         collection_id = item.parent_id
         index = item.index
 
-        author_id = 'n/a'
-        if type(item) is 'ArtPieceWithId':
+        author_id = -1
+        if type(item) is ArtPieceWithId:
             for author in artists:
                 if item.author == author.name:
                     author_id = author.unique_id
@@ -168,6 +173,10 @@ class ItemToSql(SothebysObjToSQL):
         price = item.price_number
         currency_id = -1
         for currency in currencies:
+            print('test')
+            print(currency.name)
+            print(item.price_currency)
+            print()
             if item.price_currency == currency.name:
                 currency_id = currency.unique_id
 
@@ -180,27 +189,25 @@ class ItemToSql(SothebysObjToSQL):
 # creates a place sql object
 class PlaceToSQL(SothebysObjToSQL):
     def __init__(self, place: PlaceWithId) -> None:
-        super().__init__('places', self.get_columns(), self.values(place))
+        super().__init__('places', self.get_columns(), self.get_values(place))
 
     @staticmethod
     def get_columns() -> List[Column]:
         columns = [Column('id', 'int(16)', ['NOT NULL'], primary_key=True),
-                   Column('name', 'varchar(255)', ['COLLATE utf8_bin']),
-                   Column('country', 'varchar(255)', ['COLLATE utf8_bin']),
+                   Column('region_name', 'varchar(255)', ['COLLATE utf8_bin']),
                    Column('city', 'varchar(255)', ['COLLATE utf8_bin']),
                    Column('address', 'varchar(255)', ['COLLATE utf8_bin']),
-                   Column('phone_number', 'int(16)'),
-                   Column('bio', 'varchar(255)', ['COLLATE utf8_bin'])]
+                   Column('phone_number', 'varchar(255)', ['COLLATE utf8_bin']),
+                   Column('bio', 'TEXT', ['COLLATE utf8_bin'])]
         return columns
 
     @staticmethod
     def get_values(place: PlaceWithId) -> Tuple:
         _id = place.unique_id
-        name = place.name
-        country = place.country
+        region_name = place.region_name
         city = place.city
         address = place.address
         phone_number = place.phone_number
         bio = place.bio
 
-        return _id, name, country, city, address, phone_number, bio
+        return _id, region_name, city, address, phone_number, bio

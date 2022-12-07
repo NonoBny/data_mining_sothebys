@@ -48,7 +48,7 @@
     "HOST" : "localhost",
     "USER" : "root",
     "PASSWORD" : "root",
-    "DATABASE" : "collection_db",
+    "DATABASE" : "sothebys_db",
     "CHARSET" : "utf8mb4"
   }
 }

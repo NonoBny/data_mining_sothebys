@@ -4,7 +4,7 @@ from typing import List, Tuple
 import json
 
 
-with open('../config.json.json') as config_file:
+with open('config.json') as config_file:
     data = json.load(config_file)
     sql_data = data["SQL_DATA"]
 

@@ -161,12 +161,14 @@ class ArtPiece(Item):
         return visitor.visit_art_piece(self)
 
 
-# todo implement this class
 class Currency(SothebysObject):
     def __init__(self, name):
         self.name = name
         c = CurrencyConverter()
-        self.dollar_value = c.convert(1, name, 'USD')
+        if self.name == "":
+            self.dollar_value = 0
+        else:
+            self.dollar_value = c.convert(1, name, 'USD')
 
     def print(self):
         print(f"{self.name}")
@@ -177,15 +179,15 @@ class Currency(SothebysObject):
 
 # todo implement this class
 class Place(SothebysObject):
-    def __init__(self, name, country, city, address, phone_number, bio):
-        self.name = name
-        self.country = country
+    def __init__(self, region_name, city, address, phone_number, bio):
+        self.region_name = region_name
         self.city = city
-        self.address = address, self.phone_number = phone_number
+        self.address = address,
+        self.phone_number = phone_number
         self.bio = bio
 
     def print(self):
-        print(f"{self.name} - {self.country} - {self.city} - {self.bio} - {self.address} {self.bio}")
+        print(f"{self.region_name} - {self.city} - {self.address} - {self.phone_number} {self.bio}")
 
     def accept(self, visitor: Visitor):
         return visitor.visit_place(self)

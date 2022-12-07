@@ -13,6 +13,21 @@ with open('config.json') as config_file:
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 
+def get_artist_short(soup: BeautifulSoup):
+    page_info = soup.find_all("div", class_="_1NKmJc-dm-eCxS4OCrXrR5")
+    artists = []
+
+    for item_info in page_info:
+        if item_info.find("div", class_="_3NZctpq_uZ_mC8NSFPQqk_").text == "Artist":
+            artist_info = item_info.find("h3", class_="_3Dm_PuL3C5IuyJed8hRgRn").text
+            artists.append(Artist(artist_info, '', ''))
+
+    for artist in artists:
+        artist.print()
+
+    return artists
+
+
 def get_artist_links(soup: BeautifulSoup):
     page_info = soup.find_all("div", class_="_1NKmJc-dm-eCxS4OCrXrR5")
     artists_info = []
@@ -50,23 +65,15 @@ def main() -> List[Artist]:
     url = "https://www.sothebys.com/en/search?locale=en&query=artists&tab=artistsmakers"
     driver.get(url)
     time.sleep(data['WAIT_TIME_20'])
-    artists = []
     soup = BeautifulSoup(driver.page_source, "html.parser")
-    artist_links = get_artist_links(soup)
+    artists = get_artist_short(soup)
 
-    for i in range(0):
+    for i in range(2, 16):
         link = url+'&p='+str(i)
         driver.get(link)
         time.sleep(data['WAIT_TIME_20'])
         soup = BeautifulSoup(driver.page_source, "html.parser")
-        artist_links += get_artist_links(soup)
-
-    print(artist_links)
-    for artist_link in artist_links:
-        driver.get(artist_link)
-        time.sleep(data['WAIT_TIME_20'])
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-        artists.append(get_artist_data(soup))
+        artists += get_artist_short(soup)
 
     return artists
 
