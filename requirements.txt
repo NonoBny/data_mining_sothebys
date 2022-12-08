@@ -1,10 +1,10 @@
 $ pip freeze
-beautifulsoup4==4.8.2
-requests==2.28.1
-selenium==4.5.0
+beautifulsoup4 == 4.8.2
+requests == 2.28.1
+selenium == 4.5.0
 chromedriver-py==106.0.5249.61
 lxml==4.9.1
 webdriver-manager==3.8.4
 packaging==21.3
 pymysql==1.0.2
-grequests==0.6.0
+CurrencyConverter==0.17.3

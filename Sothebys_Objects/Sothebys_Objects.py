@@ -1,13 +1,39 @@
+from Sothebys_Objects.Visitor import Visitor
 from currency_converter import CurrencyConverter
-import datetime
-import time
 
 
 class SothebysObject:
-    pass
+    def print(self):
+        pass
+
+    def accept(self, visitor: Visitor):
+        return visitor.visit_sothebys_object(self)
 
 
-class Collection:
+class Artist(SothebysObject):
+    """
+    A simple class of an artist on the Sotheybs website
+    """
+    def __init__(self, name: str):
+        """
+        :param name: the name of the artist
+        :param life: the birth and death year of an artist (if no longer alive)
+        :param bio: a short story of the artist
+        """
+        self.name = name
+
+    def print(self):
+        """
+        will print the Artist in a nice way
+        :return: none
+        """
+        print(f'Artist Name: {str(self.name)}')
+
+    def accept(self, visitor: Visitor):
+        return visitor.visit_artist(self)
+
+
+class Collection(SothebysObject):
     """
        This Class will contain sotheybs collection data
        A collection is a list of items all sold as a single collection
@@ -67,8 +93,11 @@ class Collection:
             self.print_gen_info()
             self.print_item_info()
 
+    def accept(self, visitor: Visitor):
+        return visitor.visit_collection(self)
 
-class Item:
+
+class Item(SothebysObject):
     """
     A class for a specific item sold on the Sothebys website
     I is part of a collection of items
@@ -99,6 +128,9 @@ class Item:
         return f"{self.index} - {self.title} - {self.type} - {self.price_number} {self.price_currency} - " \
                f"{self.reserve_or_not} - {self.estimate_price}"
 
+    def accept(self, visitor: Visitor):
+        return visitor.visit_item(self)
+
 
 class ArtPiece(Item):
     """
@@ -123,25 +155,37 @@ class ArtPiece(Item):
         return f"{self.index} - {self.author} - {self.title} - {self.type} - {self.price_number} {self.price_currency} " \
                f"- {self.reserve_or_not} - {self.estimate_price}"
 
+    def accept(self, visitor: Visitor):
+        return visitor.visit_art_piece(self)
 
-class Artist:
-    """
-    A simple class of an artist on the Sotheybs website
-    """
-    def __init__(self, name: str, life: str, bio: str):
-        """
 
-        :param name: the name of the artist
-        :param life: the birth and death year of an artist (if no longer alive)
-        :param bio: a short story of the artist
-        """
+class Currency(SothebysObject):
+    def __init__(self, name):
         self.name = name
-        self.life = life
+        c = CurrencyConverter()
+        if self.name == "":
+            self.dollar_value = 0
+        else:
+            self.dollar_value = c.convert(1, name, 'USD')
+
+    def print(self):
+        print(f"{self.name}")
+
+    def accept(self, visitor: Visitor):
+        return visitor.visit_currency(self)
+
+
+# todo implement this class
+class Place(SothebysObject):
+    def __init__(self, region_name, city, address, phone_number, bio):
+        self.region_name = region_name
+        self.city = city
+        self.address = address,
+        self.phone_number = phone_number
         self.bio = bio
 
     def print(self):
-        """
-        will print the Artist in a nice way
-        :return: none
-        """
-        print(f'Artist Name: {str(self.name)}\n+Life: {str(self.life)}\n+ Biography {str(self.bio)}')
+        print(f"{self.region_name} - {self.city} - {self.address} - {self.phone_number} {self.bio}")
+
+    def accept(self, visitor: Visitor):
+        return visitor.visit_place(self)

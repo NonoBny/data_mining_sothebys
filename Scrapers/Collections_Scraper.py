@@ -1,20 +1,29 @@
+import argparse
+import json
+import sys
+import textwrap
 import time
+from typing import Dict, List, Tuple
+
 from bs4 import BeautifulSoup
+from currency_converter import CurrencyConverter
 from lxml import etree
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from typing import Dict, List, Tuple
+
 from Sothebys_Objects import Collection, Item, ArtPiece
-import json
 
 with open('../config.json') as config_file:
     data = json.load(config_file)
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+
+# driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
 def login() -> None:
@@ -24,17 +33,15 @@ def login() -> None:
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_1']))) \
         .click()
 
-    #file = open('../password_id', mode='r')
-    
-    #text_1 = file.readline().strip()
-    text_1 = 'josephaschoen@gmail.com'
+    file = open('../password_id', mode='r')
+    text_1 = file.readline().strip()
 
     WebDriverWait(driver, data['WAIT_TIME_20']) \
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_2']))) \
         .send_keys(text_1)
 
-    #text_2 = file.readline().strip()
-    text_2 = 'ITCDataMining22'
+    text_2 = file.readline().strip()
+
     WebDriverWait(driver, data['WAIT_TIME_20']) \
         .until(EC.element_to_be_clickable((By.XPATH, data['X_PATH_LINK_3']))) \
         .send_keys(text_2)
@@ -88,7 +95,7 @@ def get_url_n_sale_total() -> Tuple[List[str], List[str]]:
                 if not total_sale:
                     total_sale_str = data['NA_INFO']
                 else:
-                    total_sale_str = total_sale[2] + " " + total_sale[3]
+                    total_sale_str = total_sale[2].replace(",", "") + " " + total_sale[3]
             list_sale_total.append(total_sale_str)
     return list_url, list_sale_total
 
@@ -119,7 +126,8 @@ def general_info() -> Tuple[str, str, str, str]:
 
 
 def get_item_data(sale_item: BeautifulSoup, tag_type: str, class_name: str) -> Tuple[str, str, str]:
-    item_obj = sale_item.find(tag_type, class_= class_name)
+    """get the index, info and type of item"""
+    item_obj = sale_item.find(tag_type, class_=class_name)
     type_of_item = data['OTHER_ITEMS']
     if item_obj is not None:
         info_title = item_obj.text.split(maxsplit=1)
@@ -163,7 +171,7 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
     """verify if the data point are available or not (for example in case of ongoing auction"""
     if price_sold is not None:
         price_info = price_sold.text.split()
-        price_number = price_info[0]
+        price_number = int(price_info[0].replace(",", ""))
         price_currency = price_info[1]
     else:
         price_number = data['NOT_SOLD']
@@ -175,7 +183,7 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
         reserve_or_not = data['RESERVE']
 
     if estimate_price is not None:
-        estimate_price_str = estimate_price.text
+        estimate_price_str = estimate_price.text.replace(",", "")
     else:
         estimate_price_str = data['NO_EST_AV']
 
@@ -183,9 +191,8 @@ def check_data_none(price_sold, reserve_item, estimate_price) -> Tuple[str, str,
 
 
 def get_collection_item_data(soup: BeautifulSoup, square_or_list_class_name: str, price_sold_class_name: str,
-                             estimated_price_class_name: str, reserve_item_class_name: str)\
+                             estimated_price_class_name: str, reserve_item_class_name: str) \
         -> Tuple[List[Item], Dict[str, int]]:
-
     items: List[Item] = []
     count_dict: Dict[str, int] = {data['ART_PIECES']: 0, data['OTHER_ITEMS']: 0}
 
@@ -259,8 +266,36 @@ def get_page_data(list_links, list_total_sales) -> List[Collection]:
         try:
             collection = get_collection_data()
             collection.total_sale = list_total_sales.pop(0)
-            collection.print()
-            data_point_list.append(collection)
+            try:
+                args = parser_for_scraper()
+                if args.notsold:
+                    collection.print_gen_info()
+                    collection.print_item_not_sold()
+                elif args.typeitem is not None:
+                    type_item = args.typeitem
+                    collection.print_type_item(type_item)
+                elif args.totalsale is not None:
+                    total_sale = args.totalsale
+                    try:
+                        price_point = int(total_sale[0])
+                        currency = total_sale[1]
+                        c = CurrencyConverter()
+                        if currency not in c.currencies:
+                            raise ValueError
+                        else:
+                            collection.print_coll_total_sale_min(price_point, currency)
+                    except ValueError:
+                        print("Either the 1st parameter is not an integer, or the currency you've "
+                              "entered is wrong")
+                        sys.exit(1)
+                    else:
+                        collection.print_gen_info()
+                        collection.print_item_info()
+                    data_point_list.append(collection)
+            except SystemExit:
+                print('Something is wrong with the arguments you have passed on the terminal !')
+                driver.quit()
+                sys.exit(1)
         except IndexError:
             continue
     return data_point_list
@@ -271,7 +306,7 @@ def get_result_page_data() -> List[Collection]:
     data_point_list: List[Collection] = []
     link_to_next_page = data['LINK_NEXT_RES']
 
-    for page_number in range(data['NUMBER_OF_PAGES']-1):
+    for page_number in range(data['NUMBER_OF_PAGES'] - 1):
         list_links, list_total_sales = get_url_n_sale_total()
         data_point_list += get_page_data(list_links, list_total_sales)
         driver.get(link_to_next_page)
@@ -282,6 +317,33 @@ def get_result_page_data() -> List[Collection]:
     driver.quit()
 
     return data_point_list
+
+
+def parser_for_scraper():
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     description=textwrap.dedent(
+                                         ''' Three different actions can be taken through the parser :
+        * you can print only the unsold items
+         [--notsold] 
+        * you can choose which type of items between 
+        {'Other items', 'Art pieces'} you would like to print"
+         [--typeitem {Other items,Art pieces}]
+        * you can set a minimum total sale value in any currency 
+        you want and to only print the auctions with a total sale above it, 
+        whatever is the currency they were sold in
+        [--totalsale number currency]'''))
+    parser.add_argument('--notsold', action='store_true',
+                        help='Action that calls only the items that were not sold')
+    parser.add_argument('--typeitem', type=str, choices=['Other items', 'Art pieces'],
+                        help='Action that has to be followed with the type of item desired between "" to only '
+                             'print the collection with this specific type of item', default=None)
+    parser.add_argument('--totalsale', nargs=2, type=str, metavar=('number', 'currency'),
+                        help="Action to print the collection total sale price value above the number "
+                             "you are entering and given the currency entered (to be able to compare it to"
+                             " collections sold in other currencies)", default=None)
+
+    parsed_arguments = parser.parse_args()
+    return parsed_arguments
 
 
 def main() -> List[Collection]:
