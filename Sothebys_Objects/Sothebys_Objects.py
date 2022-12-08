@@ -14,22 +14,20 @@ class Artist(SothebysObject):
     """
     A simple class of an artist on the Sotheybs website
     """
-    def __init__(self, name: str, life: str, bio: str):
+    def __init__(self, name: str):
         """
         :param name: the name of the artist
         :param life: the birth and death year of an artist (if no longer alive)
         :param bio: a short story of the artist
         """
         self.name = name
-        self.life = life
-        self.bio = bio
 
     def print(self):
         """
         will print the Artist in a nice way
         :return: none
         """
-        print(f'Artist Name: {str(self.name)}\n+Life: {str(self.life)}\n+ Biography {str(self.bio)}')
+        print(f'Artist Name: {str(self.name)}')
 
     def accept(self, visitor: Visitor):
         return visitor.visit_artist(self)

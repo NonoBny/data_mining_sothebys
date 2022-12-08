@@ -2,9 +2,9 @@ import Objects_to_SQL.Sothebys_Obj_To_SQL
 from Scrapers import Collections_Scraper, Artists_Scraper, Places_Scraper
 from Sothebys_Objects.Sothebys_Objects import Collection, Artist, Currency, Place
 from Sothebys_Objects.Sothebys_Objects_with_Id import CollectionWithId, ArtistWithId, CurrencyWithId, PlaceWithId
-from Objects_to_SQL.Sothebys_Obj_To_SQL import CollectionToSql, ItemToSql, ArtistToSQL, CurrencyToSQL, PlaceToSQL
+
 from Sothebys_Objects.To_SQL_Obj_Visitor import ToSQLObjectVisitor
-from typing import List, Tuple
+from typing import List
 
 
 def get_collections_and_currencies():
@@ -39,7 +39,7 @@ def get_artists():
 
     artists = Artists_Scraper.main()
     artists_with_ids = list(map(lambda artist, a_id: ArtistWithId(artist, a_id), artists, range(1, len(artists) + 1)))
-    artists_with_ids.append(ArtistWithId(Artist('', '', ''), -1))
+    artists_with_ids.append(ArtistWithId(Artist(''), -1))
     artists_to_sql = list(map(lambda artist: artist.accept(to_sql_visitor), artists_with_ids))
     artists_to_sql[0].create_table()
 
@@ -78,8 +78,8 @@ def get_currencies_with_id(collections_with_id: List[CollectionWithId]) -> List[
 
 def main() -> None:
     get_artists()
-    get_places()
-    get_collections_and_currencies()
+    #get_places()
+    #get_collections_and_currencies()
 
 
 if __name__ == '__main__':

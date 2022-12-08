@@ -47,7 +47,7 @@ class ArtPieceWithId(ArtPiece):
 
 class ArtistWithId(Artist):
     def __init__(self, artist: Artist, _id):
-        super().__init__(artist.name, artist.life, artist.bio)
+        super().__init__(artist.name)
         self.unique_id = _id
 
 

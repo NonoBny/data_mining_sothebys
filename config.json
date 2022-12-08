@@ -50,5 +50,21 @@
     "PASSWORD" : "root",
     "DATABASE" : "sothebys_db",
     "CHARSET" : "utf8mb4"
+  },
+
+  "Artist_Scraper_Data": {
+    "Starting_Link" : "https://www.sothebys.com/en/search?locale=en&query=artists&tab=artistsmakers",
+    "page_info": "_1NKmJc-dm-eCxS4OCrXrR5",
+    "item_info_artists": "_3NZctpq_uZ_mC8NSFPQqk_",
+    "Artist": "Artist",
+    "artist_info" : "_3Dm_PuL3C5IuyJed8hRgRn",
+    "Artist_Link": "_3AU1X3oKP8TOvGyzhJI6eh oK8AyI4p9HdIRc7HuYLz6",
+    "Artist_Name": "ArtistPage-pageHeading",
+    "Artist_Life": "ArtistPage-artistInfo",
+    "Artist_Bio": "ArtistPage-bioText"
+  },
+
+  "Places_Scraper_Data" : {
+
   }
 }

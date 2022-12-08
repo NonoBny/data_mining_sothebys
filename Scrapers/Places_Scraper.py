@@ -9,8 +9,40 @@ from Sothebys_Objects.Sothebys_Objects import Place
 
 with open('config.json') as config_file:
     data = json.load(config_file)
+    places_scraper_data = data["Places_Scraper_Data"]
 
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+
+
+def get_bio(soup: BeautifulSoup):
+    city_bio = soup.find('div', class_='VenueLocationPage-venueDescription')
+    if city_bio:
+        city_bio = city_bio.text
+    else:
+        city_bio = soup.find('div', class_="RichTextModule-items").text
+    print(city_bio)
+    return city_bio
+
+
+def get_address(soup: BeautifulSoup):
+    address = soup.find('div', class_="Address-address")
+
+    if address:
+        address = address.text
+    else:
+        address = 'n/a'
+    print(address)
+    return address
+
+
+def get_phone_number(soup: BeautifulSoup):
+    phone_number = soup.find('div', class_='Address-phone')
+    if phone_number:
+        phone_number = phone_number.text
+    else:
+        phone_number = 'n/a'
+    print(phone_number)
+    return phone_number
 
 
 def get_city_info(link: str):
@@ -18,29 +50,9 @@ def get_city_info(link: str):
     time.sleep(5)
     html = driver.page_source
     soup = BeautifulSoup(html, 'html.parser')
-    city_bio = soup.find('div', class_='VenueLocationPage-venueDescription')
-
-    if city_bio:
-        city_bio = city_bio.text
-    else:
-        city_bio = soup.find('div', class_="RichTextModule-items").text
-    print(city_bio)
-
-    address = soup.find('div', class_="Address-address")
-
-    if address:
-        address = address.text
-    else:
-        address = 'n/a'
-
-    phone_number = soup.find('div', class_='Address-phone')
-    if phone_number:
-        phone_number = phone_number.text
-    else:
-        phone_number = 'n/a'
-
-    print(address)
-    print(phone_number)
+    city_bio = get_bio(soup)
+    address = get_address(soup)
+    phone_number = get_phone_number(soup)
     return address, phone_number, city_bio
 
 
@@ -79,4 +91,3 @@ def main() -> List[Place]:
 
 if __name__ == '__main__':
     main()
-

@@ -1,14 +1,17 @@
+import time
 from Objects_to_SQL.Sothebys_SQL_Obj import SothebysSQLObject, Column, ForeignKey
 from Sothebys_Objects.Sothebys_Objects_with_Id import CollectionWithId, ItemWithId, ArtPieceWithId, \
     ArtistWithId, CurrencyWithId, PlaceWithId
 import datetime
 from typing import List, Tuple
+import requests
+import json
+from unidecode import unidecode
 
 
 artists: List[ArtistWithId] = []
 currencies: List[CurrencyWithId] = []
 places: List[PlaceWithId] = []
-
 
 # the lists of all of these objects is needed to get the foreign keys
 def set_artist_(_artists: List[ArtistWithId]) -> None:
@@ -57,25 +60,114 @@ class SothebysObjToSQL:
 
 # creates an Artist SQL objects
 class ArtistToSQL(SothebysObjToSQL):
+
     def __init__(self, artist: ArtistWithId) -> None:
         super().__init__('artists', self.get_columns(), self.get_values(artist))
 
     @staticmethod
+    def format_name(name):
+        words_to_remove = ['sir', 'lord']
+        name_substitutions = [('Kazimir', 'Kasimir'), ('Alfonse', 'Alfons'), ('Angelika', 'Angelica')]
+
+        # 'the', 'elder', 'younger',
+        print(name)
+        name = unidecode(name).lower()
+        name = name.replace(' ', '-')
+        while name[-1] == '-':
+            name = name[:-1]
+
+        while name[0] == '-':
+            name = name[1:]
+
+        name = name.split('-and-')[0]
+        name = name.split('-')
+
+
+        clean_word = ''
+        for i in range(len(name)):
+            if name[i] in words_to_remove or (name[i].count('.') > 1 and i > 0):
+                continue
+            for j in range(len(name[i])):
+                if name[i][j].isalpha() or name[i][j] == '&':
+                    clean_word += name[i][j]
+            clean_word += ' '
+
+        clean_word = clean_word.replace(' ', '-')
+
+        if clean_word[-1] == '-':
+            clean_word = clean_word[:-1]
+        clean_word = clean_word.replace('--', '-')
+        name = clean_word
+
+        for sub in name_substitutions:
+            if sub[0].lower() in name:
+                name = name.replace(sub[0].lower(), sub[1].lower())
+        if '-the-elder-' in name:
+            name = name.replace('-the-elder-', '-')
+            name = name + '-the-elder'
+
+        if '-the-younger-' in name:
+            name = name.replace('-the-elder-', '-')
+            name = name + '-the-elder'
+        print(name)
+        return name
+
+    @staticmethod
     def get_columns() -> List[Column]:
         artist_columns = [Column('id', 'int(16)', ['NOT NULL'], primary_key=True),
-                          Column('name', 'varchar(255)', ['COLLATE utf8_bin']),
-                          Column('life', 'varchar(255)', ['COLLATE utf8_bin']),
-                          Column('bio', 'TEXT', ['COLLATE utf8_bin'])]
+                          Column('name', 'varchar(64)', ['COLLATE utf8_bin']),
+                          Column('gender', 'varchar(64)', ['COLLATE utf8_bin']),
+                          Column('bio', 'TEXT', ['COLLATE utf8_bin']),
+                          Column('birthday', 'varchar(64)', ['COLLATE utf8_bin']),
+                          Column('deathday', 'varchar(64)', ['COLLATE utf8_bin']),
+                          Column('home_town', 'varchar(64)', ['COLLATE utf8_bin']),
+                          Column('location', 'varchar(64)', ['COLLATE utf8_bin'])]
         return artist_columns
+
+
+    @staticmethod
+    def get_data_from_api(artist: ArtistWithId):
+        if artist.name == '':
+            return
+        params = {
+            'client_id': '64b2024a34869c2c026e',
+            'client_secret': '124aede4d3cf6dfc251bf485ed09f666',
+        }
+        response = requests.post('https://api.artsy.net/api/tokens/xapp_token', params=params)
+        xapp_token = json.loads(response.text)['token']
+        print(xapp_token)
+        headers = {
+            'X-Xapp-Token': xapp_token,
+        }
+
+        response = requests.get('https://api.artsy.net/api/artists/'+ArtistToSQL.format_name(artist.name), headers=headers)
+        print(json.loads(response.text))
+        data = json.loads(response.text)
+        return data
 
     @staticmethod
     def get_values(artist: ArtistWithId) -> Tuple:
+
         _id = artist.unique_id
         name = artist.name
-        life = artist.life
-        bio = artist.bio
 
-        return _id, name, life, bio
+        data = ArtistToSQL.get_data_from_api(artist)
+        if data is not None and not 'message' in data.keys():
+            gender = data["gender"]
+            bio = data["biography"]
+            birthday = data["birthday"]
+            deathday = data["deathday"]
+            hometown = data["hometown"]
+            location = data["location"]
+        else:
+            gender = 'n/a'
+            bio = 'n/a'
+            birthday = 'n/a'
+            deathday = 'n/a'
+            hometown = 'n/a'
+            location = 'n/a'
+
+        return _id, name, gender, bio, birthday, deathday, hometown, location
 
 
 # creates a Collection SQL objects
@@ -173,10 +265,6 @@ class ItemToSql(SothebysObjToSQL):
         price = item.price_number
         currency_id = -1
         for currency in currencies:
-            print('test')
-            print(currency.name)
-            print(item.price_currency)
-            print()
             if item.price_currency == currency.name:
                 currency_id = currency.unique_id
 
