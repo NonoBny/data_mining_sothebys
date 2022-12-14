@@ -20,7 +20,7 @@ from Sothebys_Objects.Sothebys_Objects import Collection, Item, ArtPiece
 with open('config.json') as config_file:
     data = json.load(config_file)
 
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
 def login() -> None:
