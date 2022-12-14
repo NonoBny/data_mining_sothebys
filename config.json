@@ -45,10 +45,10 @@
   "RESERVE_FORMAT_2": "label-module_label12Medium__THkRn css-1xkt3wv",
 
   "SQL_DATA" : {
-    "HOST" : "localhost",
-    "USER" : "root",
-    "PASSWORD" : "root",
-    "DATABASE" : "sothebys_db",
+    "HOST" : "http://data-mining-db1.cttpnp4olbpx.us-west-1.rds.amazonaws.com",
+    "USER" : "noa_yosef",
+    "PASSWORD" : "noa_yosef",
+    "DATABASE" : "noa_yosef",
     "CHARSET" : "utf8mb4"
   },
 
