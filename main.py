@@ -78,8 +78,8 @@ def get_currencies_with_id(collections_with_id: List[CollectionWithId]) -> List[
 
 def main() -> None:
     get_artists()
-    #get_places()
-    #get_collections_and_currencies()
+    get_places()
+    get_collections_and_currencies()
 
 
 if __name__ == '__main__':
