@@ -11,7 +11,7 @@ with open('config.json') as config_file:
     data = json.load(config_file)
     artist_scraper_data = data["Artist_Scraper_Data"]
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 
 def get_artists(soup: BeautifulSoup):

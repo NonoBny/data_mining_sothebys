@@ -11,7 +11,7 @@ with open('config.json') as config_file:
     data = json.load(config_file)
     places_scraper_data = data["Places_Scraper_Data"]
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 
 def get_bio(soup: BeautifulSoup):
