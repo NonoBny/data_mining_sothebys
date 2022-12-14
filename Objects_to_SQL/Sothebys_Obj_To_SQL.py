@@ -1,4 +1,3 @@
-import time
 from Objects_to_SQL.Sothebys_SQL_Obj import SothebysSQLObject, Column, ForeignKey
 from Sothebys_Objects.Sothebys_Objects_with_Id import CollectionWithId, ItemWithId, ArtPieceWithId, \
     ArtistWithId, CurrencyWithId, PlaceWithId
@@ -12,6 +11,7 @@ from unidecode import unidecode
 artists: List[ArtistWithId] = []
 currencies: List[CurrencyWithId] = []
 places: List[PlaceWithId] = []
+
 
 # the lists of all of these objects is needed to get the foreign keys
 def set_artist_(_artists: List[ArtistWithId]) -> None:
