@@ -194,12 +194,7 @@ class CollectionToSql(SothebysObjToSQL):
         _id = collection.unique_id
         title_of_collection = collection.title_of_collection
         date_of_auction = string_to_date_time(collection)
-
-        place_of_auction = -1
-        for place in places:
-            if collection.place_of_auction == place.city:
-                place_of_auction = place.unique_id
-
+        place_of_auction = SothebysSQLObject.get_id_from_table('places', 'city', collection.place_of_auction)
         number_of_items = collection.number_of_items
         type_of_items = collection.type_of_items
         total_sale = collection.total_sale
@@ -258,9 +253,7 @@ class ItemToSql(SothebysObjToSQL):
 
         author_id = -1
         if type(item) is ArtPieceWithId:
-            for author in artists:
-                if item.author == author.name:
-                    author_id = author.unique_id
+            author_id = SothebysSQLObject.get_id_from_table('artists', 'name', item.author)
 
         title = item.title
         type_of_items = item.type

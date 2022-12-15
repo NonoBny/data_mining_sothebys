@@ -6,8 +6,8 @@ import json
 
 with open('config.json') as config_file:
     data = json.load(config_file)
-    #sql_data = data["SQL_DATA_Local"]
-    sql_data = data["SQL_DATA_AWS"]
+    sql_data = data["SQL_DATA_Local"]
+    #sql_data = data["SQL_DATA_AWS"]
 
 connection = pymysql.connect(host=sql_data["HOST"],
                              user=sql_data["USER"],
@@ -102,3 +102,15 @@ class SothebysSQLObject:
     def delete_table(self) -> None:
         # todo implement this
         pass
+
+    @staticmethod
+    def get_id_from_table(table_name, column_name, name):
+        sql = "select id From " + table_name + " Where " + column_name + " = " + "\"" + name + "\""
+        print(sql)
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            record = cursor.fetchall()
+        connection.commit()
+        if len(record) > 0:
+            return record[0].get('id')
+        return -1
