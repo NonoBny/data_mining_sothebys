@@ -13,8 +13,8 @@ with open('config.json') as config_file:
     artist_scraper_data = data["Artist_Scraper_Data"]
 
 options = Options()
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
+#options.add_argument('--headless')
+#options.add_argument('--disable-gpu')
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
 

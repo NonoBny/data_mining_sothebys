@@ -44,13 +44,21 @@
   "ESTIMATE_PRICE_FORMAT_2": "paragraph-module_paragraph14Regular__Zfr98 css-trd9wg",
   "RESERVE_FORMAT_2": "label-module_label12Medium__THkRn css-1xkt3wv",
 
-  "SQL_DATA" : {
+  "SQL_DATA_AWS" : {
     "HOST" : "http://data-mining-db1.cttpnp4olbpx.us-west-1.rds.amazonaws.com",
     "USER" : "noa_yosef",
     "PASSWORD" : "noa_yosef",
     "DATABASE" : "noa_yosef",
     "CHARSET" : "utf8mb4"
   },
+  "SQL_DATA_Local": {
+    "HOST" : "localhost",
+    "USER" : "root",
+    "PASSWORD" : "root",
+    "DATABASE" : "sothebys_db",
+    "CHARSET" : "utf8mb4"
+  },
+
 
   "Artist_Scraper_Data": {
     "Starting_Link" : "https://www.sothebys.com/en/search?locale=en&query=artists&tab=artistsmakers",
