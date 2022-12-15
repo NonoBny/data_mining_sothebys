@@ -6,8 +6,8 @@ import json
 
 with open('config.json') as config_file:
     data = json.load(config_file)
-    sql_data = data["SQL_DATA_Local"]
-    #sql_data = data["SQL_DATA_AWS"]
+    #sql_data = data["SQL_DATA_Local"]
+    sql_data = data["SQL_DATA_AWS"]
 
 connection = pymysql.connect(host=sql_data["HOST"],
                              user=sql_data["USER"],
