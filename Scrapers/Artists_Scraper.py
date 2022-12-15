@@ -12,11 +12,6 @@ with open('config.json') as config_file:
     data = json.load(config_file)
     artist_scraper_data = data["Artist_Scraper_Data"]
 
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-
 
 def get_artists(soup: BeautifulSoup):
     page_info = soup.find_all("div", class_=artist_scraper_data["page_info"])
@@ -51,4 +46,8 @@ def main() -> List[Artist]:
 
 
 if __name__ == '__main__':
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
     main()
