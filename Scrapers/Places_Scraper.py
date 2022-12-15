@@ -12,11 +12,11 @@ with open('config.json') as config_file:
     data = json.load(config_file)
     places_scraper_data = data["Places_Scraper_Data"]
 
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
+options = webdriver.ChromeOptions()
+options.headless = True
+options.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36")
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version='108.0.5359.124').install()), options=options)
-
+print('got here')
 
 def get_bio(soup: BeautifulSoup):
     city_bio = soup.find('div', class_='VenueLocationPage-venueDescription')

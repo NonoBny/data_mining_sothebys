@@ -21,10 +21,12 @@ from Sothebys_Objects.Sothebys_Objects import Collection, Item, ArtPiece
 with open('config.json') as config_file:
     data = json.load(config_file)
 
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--disable-gpu')
+options = webdriver.ChromeOptions()
+options.headless = True
+options.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36")
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version='108.0.5359.124').install()), options=options)
+print('got here')
+
 
 def login() -> None:
     """login to authenticate"""
@@ -348,9 +350,15 @@ def parser_for_scraper():
 
 def main() -> List[Collection]:
     """initialize the driver, login and get the info"""
+    print('getting starting link')
     driver.get(data['START_LINK'])
-    login()
+    print('got starting link')
+    print('logging in')
+    #login()
+    print('logged in')
+    print('going to results page')
     go_to_results()
+    print('got to results page')
     result_page_data = get_result_page_data()
     print(len(result_page_data))
     return result_page_data
