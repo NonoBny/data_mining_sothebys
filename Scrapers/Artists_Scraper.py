@@ -15,7 +15,7 @@ with open('config.json') as config_file:
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--disable-gpu')
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version='108.0.5359.124').install()), options=options)
 
 
 def get_artists(soup: BeautifulSoup):
