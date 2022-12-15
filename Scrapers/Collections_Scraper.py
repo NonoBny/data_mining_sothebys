@@ -9,7 +9,6 @@ from currency_converter import CurrencyConverter
 from lxml import etree
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,6 +21,7 @@ with open('config.json') as config_file:
     data = json.load(config_file)
 
 options = webdriver.ChromeOptions()
+options.add_argument('--window-size=1920,1080')
 options.headless = True
 options.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36")
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version='108.0.5359.124').install()), options=options)
@@ -354,7 +354,7 @@ def main() -> List[Collection]:
     driver.get(data['START_LINK'])
     print('got starting link')
     print('logging in')
-    #login()
+    login()
     print('logged in')
     print('going to results page')
     go_to_results()

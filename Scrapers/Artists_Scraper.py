@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
 import time
 import json
 from typing import List
@@ -42,6 +41,7 @@ def main() -> List[Artist]:
 
     for i in range(2, 16):
         link = url+'&p='+str(i)
+        print('scraping artist page ' + str(i))
         driver.get(link)
         time.sleep(data['WAIT_TIME_20'])
         soup = BeautifulSoup(driver.page_source, "html.parser")
