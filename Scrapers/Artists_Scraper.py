@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options
 import time
 import json
 from typing import List
@@ -11,7 +12,10 @@ with open('config.json') as config_file:
     data = json.load(config_file)
     artist_scraper_data = data["Artist_Scraper_Data"]
 
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
 
 def get_artists(soup: BeautifulSoup):
