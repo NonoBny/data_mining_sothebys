@@ -6,7 +6,7 @@ from typing import List, Tuple
 import requests
 import json
 from unidecode import unidecode
-
+import time
 
 artists: List[ArtistWithId] = []
 currencies: List[CurrencyWithId] = []
@@ -134,6 +134,7 @@ class ArtistToSQL(SothebysObjToSQL):
             'client_secret': '124aede4d3cf6dfc251bf485ed09f666',
         }
         response = requests.post('https://api.artsy.net/api/tokens/xapp_token', params=params)
+        time.sleep(0.2)
         xapp_token = json.loads(response.text)['token']
         print(xapp_token)
         headers = {
@@ -141,8 +142,9 @@ class ArtistToSQL(SothebysObjToSQL):
         }
 
         response = requests.get('https://api.artsy.net/api/artists/'+ArtistToSQL.format_name(artist.name), headers=headers)
-        print(json.loads(response.text))
+        time.sleep(0.2)
         data = json.loads(response.text)
+        print(data)
         return data
 
     @staticmethod
@@ -152,7 +154,7 @@ class ArtistToSQL(SothebysObjToSQL):
         name = artist.name
 
         data = ArtistToSQL.get_data_from_api(artist)
-        if data is not None and not 'message' in data.keys():
+        if data is not None and 'message' not in data.keys():
             gender = data["gender"]
             bio = data["biography"]
             birthday = data["birthday"]
