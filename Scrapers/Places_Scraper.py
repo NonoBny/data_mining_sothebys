@@ -12,6 +12,11 @@ with open('config.json') as config_file:
     data = json.load(config_file)
     places_scraper_data = data["Places_Scraper_Data"]
 
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+
 
 def get_bio(soup: BeautifulSoup):
     city_bio = soup.find('div', class_='VenueLocationPage-venueDescription')
@@ -89,8 +94,4 @@ def main() -> List[Place]:
 
 
 if __name__ == '__main__':
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
     main()

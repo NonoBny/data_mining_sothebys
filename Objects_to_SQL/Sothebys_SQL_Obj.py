@@ -8,10 +8,10 @@ with open('config.json') as config_file:
     data = json.load(config_file)
     sql_data = data["SQL_DATA"]
 
-connection = pymysql.connect(host=sql_data["HOST"],
-                             user=sql_data["USER"],
-                             password=sql_data["PASSWORD"],
-                             database=sql_data["DATABASE"],
+connection = pymysql.connect(host=sql_data["localhost"],
+                             user=sql_data["root"],
+                             password=sql_data["root"],
+                             database=sql_data["sothebys_db"],
                              charset=sql_data["CHARSET"],
                              cursorclass=pymysql.cursors.DictCursor)
 

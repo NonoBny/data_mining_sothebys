@@ -21,6 +21,10 @@ from Sothebys_Objects.Sothebys_Objects import Collection, Item, ArtPiece
 with open('config.json') as config_file:
     data = json.load(config_file)
 
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
 def login() -> None:
     """login to authenticate"""
@@ -353,8 +357,4 @@ def main() -> List[Collection]:
 
 
 if __name__ == '__main__':
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
     main()
